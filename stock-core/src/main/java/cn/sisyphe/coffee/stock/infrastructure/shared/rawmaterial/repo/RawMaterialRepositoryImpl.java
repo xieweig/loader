@@ -41,8 +41,8 @@ public class RawMaterialRepositoryImpl implements RawMaterialRepository {
         RawMaterial rawMaterial = new RawMaterial();
         rawMaterial.setRawMaterialCode(materialResultMap.get("code"));
         rawMaterial.setRawMaterialName(materialResultMap.get("name"));
-
         return rawMaterial;
+
     }
 
     /**
@@ -56,7 +56,9 @@ public class RawMaterialRepositoryImpl implements RawMaterialRepository {
         ResponseResult responseResult = rawMaterialCloudRepository.findByMaterialTypeCodes(materialTypeArray);
         Map<String, Object> resultMap = responseResult.getResult();
         if (!resultMap.containsKey("materialCodes")) {
-            return new ArrayList<>();
+            List materialCodesList = new ArrayList<String>();
+            materialCodesList.add("NOT-MATERIAL-CODE");
+            return materialCodesList;
         }
         List<String> strings = (List<String>) resultMap.get("materialCodes");
         return strings;

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -118,6 +119,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         StringBuffer stringBuffer = addParameters(conditionQuery);
         // 加上分页
         String pageSql = withPage(stringBuffer, conditionQuery);
+        System.err.println("拼接后的sql:"+pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -151,15 +153,19 @@ public class OffsetRepositoryImpl implements OffsetRepository {
                 "inventory_total_amount,total_offset_amount,offset_amount,surplus_amount,unit_cost,source_code," +
                 "in_out_storage,create_time FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         // 拼接开始时间
         if (conditionQuery.getStopTimeStart() != null) {
-            sql.append(" and create_time  >= ");
-            sql.append(conditionQuery.getStopTimeStart());
+            sql.append(" and create_time  >= '");
+            sql.append(sdf.format(conditionQuery.getStopTimeStart()));
+            sql.append("'");
         }
         // 拼接结束时间
         if (conditionQuery.getStopTimeEnd() != null) {
-            sql.append(" and create_time  <= ");
-            sql.append(conditionQuery.getStopTimeEnd());
+            sql.append(" and create_time  <= '");
+            sql.append(sdf.format(conditionQuery.getStopTimeEnd()));
+            sql.append("'");
         }
         // 拼接原料编码
         if (!StringUtil.isEmpty(conditionQuery.getMaterialCode())) {

@@ -32,6 +32,11 @@ public class ConditionQueryStorage implements Serializable {
     private Date stopTimeEnd;
 
     /**
+     * 根据货物还是原料查询
+     */
+    private String cargoOrMaterial;
+
+    /**
      * 站点编码
      */
     private List<String> stationCodeArray;
@@ -177,11 +182,20 @@ public class ConditionQueryStorage implements Serializable {
         this.pageSize = pageSize;
     }
 
+    public String getCargoOrMaterial() {
+        return cargoOrMaterial;
+    }
+
+    public void setCargoOrMaterial(String cargoOrMaterial) {
+        this.cargoOrMaterial = cargoOrMaterial;
+    }
+
     @Override
     public String toString() {
         return "ConditionQueryStorage{" +
                 "stopTimeStart=" + stopTimeStart +
                 ", stopTimeEnd=" + stopTimeEnd +
+                ", cargoOrMaterial='" + cargoOrMaterial + '\'' +
                 ", stationCodeArray=" + stationCodeArray +
                 ", storageCodeArray=" + storageCodeArray +
                 ", cargoCode='" + cargoCode + '\'' +

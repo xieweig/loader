@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author XiongJing
  */
-@FeignClient(value = "COFFEE-BASEINFO", fallback = LocalProductCloudRepository.class)
+@FeignClient(value = "COFFEE-BASEINFO-TEST", fallback = LocalProductCloudRepository.class)
 public interface ProductCloudRepository {
     /**
      * 根据产品编码查询产品信息

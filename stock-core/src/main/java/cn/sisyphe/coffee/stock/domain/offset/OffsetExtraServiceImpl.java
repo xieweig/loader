@@ -3,6 +3,7 @@ package cn.sisyphe.coffee.stock.domain.offset;
 import cn.sisyphe.coffee.stock.infrastructure.offset.OffsetRepository;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @author XiongJing
  */
+@Service
 public class OffsetExtraServiceImpl implements OffsetExtraService {
 
 

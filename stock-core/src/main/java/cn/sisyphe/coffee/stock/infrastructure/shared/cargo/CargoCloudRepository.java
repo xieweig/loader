@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author XiongJing
  */
-@FeignClient(value = "COFFEE-BASEINFO", fallback = LocalCargoCloudRepository.class)
+@FeignClient(value = "COFFEE-BASEINFO-TEST", fallback = LocalCargoCloudRepository.class)
 public interface CargoCloudRepository {
 
     /**
@@ -22,6 +22,6 @@ public interface CargoCloudRepository {
      * @param cargoCode 货物编码
      * @return
      */
-    @RequestMapping(path = "/api/v1/baseInfo/cargo/findByCargoCode", method = RequestMethod.GET)
+    @RequestMapping(path = "/api/v1/baseInfo/cargo/findDTOByCargoCode", method = RequestMethod.GET)
     ResponseResult findByCargoCode(@RequestParam("cargoCode") String cargoCode);
 }

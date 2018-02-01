@@ -42,7 +42,7 @@ public class StorageServiceImpl implements StorageService {
     public void updateInventory(Station station, Cargo cargo, RawMaterial rawMaterial, int amount) {
         if (station == null || StringUtils.isEmpty(station.getStationCode())
                 || StringUtils.isEmpty(station.getStorageCode())
-                || cargo == null || StringUtils.isEmpty(cargo.getCargoCode())){
+                || cargo == null || StringUtils.isEmpty(cargo.getCargoCode())) {
             throw new DataException("001", "库存更新失败");
         }
 
@@ -107,15 +107,15 @@ public class StorageServiceImpl implements StorageService {
             }
             // 拼接原料分类
             if (!StringUtils.isEmpty(conditionQuery.getMaterialTypeArray())) {
-                expressions.add(root.get("rawMaterial").get("materialCode").as(String.class).in(conditionQuery.getMaterialCodes()));
+                expressions.add(root.get("rawMaterial").get("rawMaterialCode").as(String.class).in(conditionQuery.getMaterialCodes()));
             }
             // 原料编码
             if (!StringUtils.isEmpty(conditionQuery.getMaterialCode())) {
-                expressions.add(cb.like(root.get("rawMaterial").get("materialCode").as(String.class), "%" + conditionQuery.getMaterialCode() + "%"));
+                expressions.add(cb.like(root.get("rawMaterial").get("rawMaterialCode").as(String.class), "%" + conditionQuery.getMaterialCode() + "%"));
             }
             // 拼接多个原料编码
             if (conditionQuery.getMaterialCodeArray() != null && conditionQuery.getMaterialCodeArray().size() > 0) {
-                expressions.add(root.get("rawMaterial").get("materialCode").as(String.class).in(conditionQuery.getMaterialCodeArray()));
+                expressions.add(root.get("rawMaterial").get("rawMaterialCode").as(String.class).in(conditionQuery.getMaterialCodeArray()));
             }
             // 拼接查询站点
             if (conditionQuery.getStationCodeArray() != null && conditionQuery.getStationCodeArray().size() > 0) {
@@ -123,7 +123,7 @@ public class StorageServiceImpl implements StorageService {
             }
             // 拼接查询库位
             if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
-                expressions.add(root.get("storage").get("storageCode").as(String.class).in(conditionQuery.getStorageCodeArray()));
+                expressions.add(root.get("station").get("storageCode").as(String.class).in(conditionQuery.getStorageCodeArray()));
             }
             return predicate;
         }, pageable);

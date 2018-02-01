@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: coffee-stock-xj
+
+info:
+  name: 库存冲减系统
+
+logging:
+  file: target/${spring.application.name}.log
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://127.0.0.1:${eureka.port:8761}/eureka/ #5
+

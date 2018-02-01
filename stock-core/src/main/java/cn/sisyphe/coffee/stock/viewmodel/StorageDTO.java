@@ -14,18 +14,18 @@ public class StorageDTO {
     /**
      * 总数量
      */
-    private Long totalPageSize;
+    private Long totalNumber;
     /**
      * 具体数据
      */
     private List<StorageQueryDTO> content;
 
-    public Long getTotalPageSize() {
-        return totalPageSize;
+    public Long getTotalNumber() {
+        return totalNumber;
     }
 
-    public void setTotalPageSize(Long totalPageSize) {
-        this.totalPageSize = totalPageSize;
+    public void setTotalNumber(Long totalNumber) {
+        this.totalNumber = totalNumber;
     }
 
     public List<StorageQueryDTO> getContent() {
@@ -39,7 +39,7 @@ public class StorageDTO {
     @Override
     public String toString() {
         return "StorageDTO{" +
-                "totalPageSize=" + totalPageSize +
+                "totalNumber=" + totalNumber +
 //                ", content=" + content +
                 '}';
     }

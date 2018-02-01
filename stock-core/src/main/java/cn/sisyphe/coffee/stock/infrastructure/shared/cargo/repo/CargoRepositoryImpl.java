@@ -34,16 +34,16 @@ public class CargoRepositoryImpl implements CargoRepository {
         ResponseResult responseResult = cargoCloudRepository.findByCargoCode(cargoCode);
         Map<String, Object> resultMap = responseResult.getResult();
         if (!resultMap.containsKey("cargo")) {
-            return new Cargo();
+            return null;
         }
-        LinkedHashMap<String, String> cargoResultMap = (LinkedHashMap) resultMap.get("cargo");
+        LinkedHashMap cargoResultMap = (LinkedHashMap) resultMap.get("cargo");
         Cargo cargo = new Cargo();
-        cargo.setCargoCode(cargoResultMap.get("cargoCode"));
-        cargo.setCargoName(cargoResultMap.get("cargoName"));
-        cargo.setBarCode(cargoResultMap.get("barCode"));
-        cargo.setMeasurement(Integer.valueOf(cargoResultMap.get("measurement")));
-        cargo.setStandardUnit(cargoResultMap.get("standardUnit"));
-        cargo.setEffectiveTime(Integer.valueOf(cargoResultMap.get("effectiveTime")));
+        cargo.setCargoCode(cargoResultMap.get("cargoCode").toString());
+        cargo.setCargoName(cargoResultMap.get("cargoName").toString());
+        cargo.setBarCode(cargoResultMap.get("barCode").toString());
+        cargo.setMeasurement(Integer.valueOf(cargoResultMap.get("number").toString()));
+        cargo.setStandardUnit(cargoResultMap.get("standardUnit").toString());
+        cargo.setEffectiveTime(Integer.valueOf(cargoResultMap.get("effectiveTime").toString()));
         return cargo;
     }
 }
