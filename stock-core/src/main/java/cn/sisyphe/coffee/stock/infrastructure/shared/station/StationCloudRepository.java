@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author XiongJing
  */
-@FeignClient(value = "COFFEE-BASEINFO-TEST", fallback = LocalStationCloudRepository.class)
+@FeignClient(value = "COFFEE-BASEINFO", fallback = LocalStationCloudRepository.class)
 public interface StationCloudRepository {
 
     /**

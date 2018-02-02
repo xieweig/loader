@@ -7,4 +7,7 @@ package cn.sisyphe.coffee.stock.domain.shared.goods.cargo;
  */
 public interface CargoService {
 
+
+    Cargo findByCargoCode(String cargoCode);
+
 }

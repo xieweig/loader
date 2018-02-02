@@ -1,6 +1,7 @@
 package cn.sisyphe.coffee.stock.amqp;
 
 import cn.sisyphe.coffee.stock.application.OffsetManager;
+import cn.sisyphe.coffee.stock.application.ShareManager;
 import cn.sisyphe.coffee.stock.domain.offset.parser.StationParser;
 import cn.sisyphe.framework.web.ResponseResult;
 import org.slf4j.Logger;
@@ -26,6 +27,9 @@ public class StationBillReceiver {
     @Autowired
     private OffsetManager offsetManager;
 
+    @Autowired
+    private ShareManager shareManager;
+
 
     /**
      * 接收站点单据
@@ -36,7 +40,9 @@ public class StationBillReceiver {
     public void receiver(ResponseResult responseResult) {
         Map<String, Object> result = responseResult.getResult();
         LOGGER.info(result.get("bill").toString());
-        offsetManager.offset(responseResult, new StationParser());
+        StationParser billParser = new StationParser();
+        billParser.setShareManager(shareManager);
+        offsetManager.offset(responseResult, billParser);
         //为了消息不被消费，测试
     }
 

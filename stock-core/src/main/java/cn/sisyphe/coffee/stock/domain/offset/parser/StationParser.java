@@ -1,6 +1,7 @@
 package cn.sisyphe.coffee.stock.domain.offset.parser;
 
 import ch.lambdaj.function.closure.Switcher;
+import cn.sisyphe.coffee.stock.application.ShareManager;
 import cn.sisyphe.coffee.stock.domain.offset.OffsetService;
 import cn.sisyphe.coffee.stock.domain.offset.strategy.CargoFirstOffsetStrategy;
 import cn.sisyphe.coffee.stock.domain.offset.strategy.OffsetStrategy;
@@ -43,6 +44,8 @@ public class StationParser implements BillParser {
 
     private ResponseResult responseResult;
 
+    private ShareManager shareManager;
+
     /**
      * 冲减操作上下文
      *
@@ -53,6 +56,13 @@ public class StationParser implements BillParser {
         this.offsetService = offsetService;
     }
 
+    public ShareManager getShareManager() {
+        return shareManager;
+    }
+
+    public void setShareManager(ShareManager shareManager) {
+        this.shareManager = shareManager;
+    }
 
     /**
      * 冲减策略
@@ -122,8 +132,8 @@ public class StationParser implements BillParser {
             pendingBillDetail.setShipAmount(billDetail.getInteger("shippedAmount"));
             pendingBillDetail.setUnitCost(billDetail.getBigDecimal("unitPrice"));
             pendingBillDetail.setExpirationTime(billDetail.getDate("dateInProduced"));
-            mapTotalAmount(pendingBillDetail);
             mapMaterialAndCargo(pendingBillDetail, (JSONObject) billDetail.get("goods"));
+            mapTotalAmount(billDetail, pendingBillDetail);
             pendingBillDetails.add(pendingBillDetail);
         }
         pendingBillItem.setPendingBillDetailList(pendingBillDetails);
@@ -171,10 +181,17 @@ public class StationParser implements BillParser {
         }
     }
 
-    private void mapTotalAmount(PendingBillDetail pendingBillDetail) {
-        //TODO CLOUD调用
-        pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
-        pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
+    private void mapTotalAmount(JSONObject billDetail, PendingBillDetail pendingBillDetail) {
+        if (pendingBillDetail.getCargo() != null) {
+            Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
+            Integer measurement = cargo.getMeasurement();
+            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount() * measurement);
+            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
+            return;
+        }
+        pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));
+
+
     }
 
     private AbstractMessagePurposeStrategy getMessageStrategy(InOutStorage inOutStorage) {
