@@ -6,4 +6,12 @@ package cn.sisyphe.coffee.stock.domain.shared.goods.product;
  * version:
  */
 public interface ProductService {
+
+    /**
+     * 根据产品编码查询产品信息
+     *
+     * @param productCode 产品编码
+     * @return
+     */
+    Product findByProductCode(String productCode);
 }

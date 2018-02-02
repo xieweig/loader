@@ -1,7 +1,7 @@
 package cn.sisyphe.coffee.stock.domain.offset.strategy;
 
 import cn.sisyphe.coffee.stock.domain.offset.Offset;
-import cn.sisyphe.coffee.stock.domain.shared.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 

@@ -2,15 +2,14 @@ package cn.sisyphe.coffee.stock.application;
 
 import cn.sisyphe.coffee.stock.domain.offset.Offset;
 import cn.sisyphe.coffee.stock.domain.offset.OffsetExtraService;
-import cn.sisyphe.coffee.stock.domain.shared.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterialService;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.StationService;
 import cn.sisyphe.coffee.stock.domain.storage.StorageService;
 import cn.sisyphe.coffee.stock.domain.storage.model.StorageInventory;
 import cn.sisyphe.coffee.stock.infrastructure.shared.cargo.repo.CargoRepository;
-import cn.sisyphe.coffee.stock.infrastructure.shared.rawmaterial.repo.RawMaterialRepository;
-import cn.sisyphe.coffee.stock.infrastructure.shared.station.repo.StationRepository;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import cn.sisyphe.coffee.stock.viewmodel.StorageDTO;
 import cn.sisyphe.coffee.stock.viewmodel.StorageQueryDTO;
@@ -40,11 +39,11 @@ public class StorageQueryManager {
     @Autowired
     private RawMaterialService rawMaterialService;
     @Autowired
-    private StationRepository stationRepository;
+    private StationService stationService;
+    @Autowired
+    private RawMaterialService materialService;
     @Autowired
     private CargoRepository cargoRepository;
-    @Autowired
-    private RawMaterialRepository rawMaterialRepository;
 
 
     /**
@@ -254,7 +253,7 @@ public class StorageQueryManager {
      * @return
      */
     private String findStationName(String stationCode) {
-        return stationRepository.findStationName(stationCode);
+        return stationService.findStationName(stationCode);
     }
 
     /**
@@ -274,6 +273,6 @@ public class StorageQueryManager {
      * @return
      */
     private RawMaterial findRawMaterial(String materialCode) {
-        return rawMaterialRepository.findByMaterialCode(materialCode);
+        return materialService.findByMaterialCode(materialCode);
     }
 }

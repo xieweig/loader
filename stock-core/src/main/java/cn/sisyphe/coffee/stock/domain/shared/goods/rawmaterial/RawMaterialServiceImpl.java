@@ -26,4 +26,15 @@ public class RawMaterialServiceImpl implements RawMaterialService {
     public List<String> findByMaterialTypeCodes(List<Long> materialTypeArray) {
         return rawMaterialRepository.findByMaterialTypeCodes(materialTypeArray);
     }
+
+    /**
+     * 根据原料编码查询原料信息
+     *
+     * @param materialCode 原料编码
+     * @return
+     */
+    @Override
+    public RawMaterial findByMaterialCode(String materialCode) {
+        return rawMaterialRepository.findByMaterialCode(materialCode);
+    }
 }

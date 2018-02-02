@@ -1,12 +1,10 @@
-package cn.sisyphe.coffee.stock.domain.shared;
+package cn.sisyphe.coffee.stock.domain.shared.station;
 
 
 import cn.sisyphe.coffee.stock.domain.storage.model.Storage;
 
-import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.persistence.Transient;
 import java.util.Objects;
 

@@ -9,7 +9,7 @@ import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
-import cn.sisyphe.coffee.stock.domain.shared.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.framework.web.ResponseResult;
 import cn.sisyphe.framework.web.exception.DataException;

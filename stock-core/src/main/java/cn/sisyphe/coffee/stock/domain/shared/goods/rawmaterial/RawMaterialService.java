@@ -16,4 +16,12 @@ public interface RawMaterialService {
      */
     List<String> findByMaterialTypeCodes(List<Long> materialTypeArray);
 
+    /**
+     * 根据原料编码查询原料信息
+     *
+     * @param materialCode 原料编码
+     * @return
+     */
+    RawMaterial findByMaterialCode(String materialCode);
+
 }

@@ -6,7 +6,7 @@ import cn.sisyphe.coffee.stock.domain.offset.OffsetService;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
-import cn.sisyphe.coffee.stock.domain.shared.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.utils.SMath;
 import cn.sisyphe.framework.web.exception.DataException;
 import org.springframework.util.StringUtils;

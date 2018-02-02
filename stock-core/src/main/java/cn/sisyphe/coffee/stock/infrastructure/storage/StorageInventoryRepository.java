@@ -1,6 +1,6 @@
 package cn.sisyphe.coffee.stock.infrastructure.storage;
 
-import cn.sisyphe.coffee.stock.domain.shared.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import cn.sisyphe.coffee.stock.domain.storage.model.StorageInventory;

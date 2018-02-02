@@ -2,7 +2,7 @@ package cn.sisyphe.coffee.stock.domain.offset;
 
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.BaseEntity;
-import cn.sisyphe.coffee.stock.domain.shared.Station;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
