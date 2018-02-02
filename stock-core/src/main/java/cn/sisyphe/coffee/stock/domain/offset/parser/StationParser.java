@@ -9,13 +9,13 @@ import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
-import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import cn.sisyphe.coffee.stock.domain.shared.message.strategy.AbstractMessagePurposeStrategy;
 import cn.sisyphe.coffee.stock.domain.shared.message.strategy.InStockPurposeStrategyImpl;
 import cn.sisyphe.coffee.stock.domain.shared.message.strategy.MoveStockPurposeStrategyImpl;
 import cn.sisyphe.coffee.stock.domain.shared.message.strategy.OutStockPurposeStrategyImpl;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.storage.model.Storage;
 import cn.sisyphe.framework.web.ResponseResult;
 import com.alibaba.fastjson.JSONObject;
@@ -185,8 +185,13 @@ public class StationParser implements BillParser {
         if (pendingBillDetail.getCargo() != null) {
             Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
             Integer measurement = cargo.getMeasurement();
-            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount() * measurement);
-            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
+            if (measurement != null) {
+                pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount() * measurement);
+                pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
+                return;
+            }
+            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
+            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
             return;
         }
         pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));
