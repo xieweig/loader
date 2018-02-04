@@ -24,6 +24,12 @@ public class RawMaterial {
     @Transient
     private String rawMaterialName;
 
+    /**
+     * 原料单位
+     */
+    @Transient
+    private String standardUnit;
+
     public RawMaterial() {
     }
 
@@ -47,11 +53,20 @@ public class RawMaterial {
         this.rawMaterialName = rawMaterialName;
     }
 
+    public String getStandardUnit() {
+        return standardUnit;
+    }
+
+    public void setStandardUnit(String standardUnit) {
+        this.standardUnit = standardUnit;
+    }
+
     @Override
     public String toString() {
         return "RawMaterial{" +
                 "rawMaterialCode='" + rawMaterialCode + '\'' +
                 ", rawMaterialName='" + rawMaterialName + '\'' +
+                ", standardUnit='" + standardUnit + '\'' +
                 '}';
     }
 }

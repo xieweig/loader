@@ -149,7 +149,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * @return
      */
     private StringBuffer addParameters(ConditionQueryStorage conditionQuery) {
-        StringBuffer sql = new StringBuffer("SELECT batch_Code,station_code,raw_material_code,cargo_code," +
+        StringBuffer sql = new StringBuffer("SELECT batch_Code,station_code,storage_code,raw_material_code,cargo_code," +
                 "inventory_total_amount,total_offset_amount,offset_amount,surplus_amount,unit_cost,source_code," +
                 "in_out_storage,create_time FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
@@ -169,7 +169,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         }
         // 拼接原料编码
         if (!StringUtil.isEmpty(conditionQuery.getMaterialCode())) {
-            sql.append(" and raw_material_code like ' ");
+            sql.append(" and raw_material_code like '");
             sql.append(conditionQuery.getMaterialCode() + "'");
         }
         // 拼接多个原料名称
@@ -274,8 +274,8 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             offset.setUnitCost((BigDecimal) map.get("unit_cost"));
             // 源单号
             offset.setSourceCode(map.get("source_code").toString());
-            // 进出库类型in_out_storage
-            offset.setInOutStorage((InOutStorage) map.get("surplus_amount"));
+            // 进出库类型
+            offset.setInOutStorage(InOutStorage.valueOf((Integer)map.get("in_out_storage")));
             // 时间
             offset.setCreateTime((Date) map.get("create_time"));
             offsetList.add(offset);

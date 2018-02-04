@@ -41,6 +41,7 @@ public class RawMaterialRepositoryImpl implements RawMaterialRepository {
         RawMaterial rawMaterial = new RawMaterial();
         rawMaterial.setRawMaterialCode(materialResultMap.get("code"));
         rawMaterial.setRawMaterialName(materialResultMap.get("name"));
+        rawMaterial.setStandardUnit(materialResultMap.get("standardUnitName"));
         return rawMaterial;
 
     }

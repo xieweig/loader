@@ -15,7 +15,6 @@ import cn.sisyphe.coffee.stock.viewmodel.StorageDTO;
 import cn.sisyphe.coffee.stock.viewmodel.StorageQueryDTO;
 import cn.sisyphe.framework.common.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -76,17 +75,16 @@ public class StorageQueryManager {
         }
         // 如果没有，则是查询最新库存
         else {
-            Page<StorageInventory> pageByCondition = storageService.findPageByCondition(conditionQuery);
-            List<StorageInventory> content = pageByCondition.getContent();
+            List<StorageInventory> inventoryList = storageService.findPageByCondition(conditionQuery);
             List<StorageQueryDTO> storageQueryDTOs = new ArrayList<>();
-            for (StorageInventory storageInventory : content) {
+            for (StorageInventory storageInventory : inventoryList) {
                 // 转换为前端显示的属性
                 StorageQueryDTO mapDTO = storageMapDTO(conditionQuery, storageInventory);
                 storageQueryDTOs.add(mapDTO);
             }
             dto.setContent(storageQueryDTOs);
-            // 查询总数，便于分页
-            dto.setTotalNumber(pageByCondition.getTotalElements());
+
+            dto.setTotalNumber(storageService.findTotalByCondition(conditionQuery));
             return dto;
         }
 
@@ -155,15 +153,17 @@ public class StorageQueryManager {
                 storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getStandardUnit());
             }
         }
+        RawMaterial rawMaterial = null;
         if (inventory.getRawMaterial() != null) {
             // 原料编码
             storageQueryDTO.setMaterialCode(inventory.getRawMaterial().getRawMaterialCode());
-            RawMaterial rawMaterial = findRawMaterial(inventory.getRawMaterial().getRawMaterialCode());
+            rawMaterial = findRawMaterial(inventory.getRawMaterial().getRawMaterialCode());
             if (rawMaterial != null) {
                 // 原料名称
                 storageQueryDTO.setMaterialName(rawMaterial.getRawMaterialName());
             }
         }
+        // 根据原料还是货物转换数量
         if (conditionQuery.getCargoOrMaterial().equals("cargo")) {
             if (cargo != null) {
                 BigDecimal totalOffsetAmountA = BigDecimal.valueOf(inventory.getTotalAmount());
@@ -173,12 +173,13 @@ public class StorageQueryManager {
                 storageQueryDTO.setNumber(number.toString());
             }
         } else {
-            if (cargo != null) {
+            if (rawMaterial != null) {
                 // 数量
-                storageQueryDTO.setNumber(inventory.getTotalAmount() + cargo.getStandardUnit());
+                storageQueryDTO.setNumber(inventory.getTotalAmount() + rawMaterial.getStandardUnit());
+            } else {
+                storageQueryDTO.setNumber(inventory.getTotalAmount() + "");
             }
         }
-
         return storageQueryDTO;
     }
 
@@ -211,6 +212,15 @@ public class StorageQueryManager {
                 storageQueryDTO.setCargoName(cargo.getCargoName());
             }
         }
+        RawMaterial rawMaterial = null;
+        // 查询原料
+        if (offset.getRawMaterial() != null) {
+            rawMaterial = findRawMaterial(offset.getRawMaterial().getRawMaterialCode());
+        }
+        if (rawMaterial != null) {
+            // 原料名称
+            storageQueryDTO.setMaterialName(rawMaterial.getRawMaterialName());
+        }
         // 货物规格
         storageQueryDTO.setStandardName(cargo.getMeasurement() + "/" + cargo.getStandardUnit());
         // 判断是否是根据货物查询
@@ -219,23 +229,18 @@ public class StorageQueryManager {
                 BigDecimal totalOffsetAmountA = BigDecimal.valueOf(offset.getTotalOffsetAmount());
                 BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
                 BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
+
                 // 变化量
-                storageQueryDTO.setChangeNumber(number + "/" + cargo.getStandardUnit());
+                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+ "/" + cargo.getStandardUnit());
             }
         } else {
             // 原料编码
             storageQueryDTO.setMaterialCode(offset.getRawMaterial().getRawMaterialCode());
+            if (offset.getRawMaterial() != null && rawMaterial != null) {
+                // 变化量
+                storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + "/" + rawMaterial.getStandardUnit());
+            }
         }
-        if (offset.getRawMaterial() != null && cargo != null) {
-            // 变化量
-            storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() + "/" + cargo.getStandardUnit());
-        }
-        RawMaterial rawMaterial = findRawMaterial(offset.getRawMaterial().getRawMaterialCode());
-        if (rawMaterial != null) {
-            // 原料名称
-            storageQueryDTO.setMaterialName(rawMaterial.getRawMaterialName());
-        }
-
         // 单据类型
         storageQueryDTO.setBillType("单据类型");
         // 单号

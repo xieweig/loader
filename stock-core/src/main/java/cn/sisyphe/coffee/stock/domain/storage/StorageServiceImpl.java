@@ -1,22 +1,25 @@
 package cn.sisyphe.coffee.stock.domain.storage;
 
-import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.storage.model.StorageInventory;
 import cn.sisyphe.coffee.stock.infrastructure.storage.StorageInventoryRepository;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
+import cn.sisyphe.framework.common.utils.StringUtil;
 import cn.sisyphe.framework.web.exception.DataException;
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by heyong on 2018/1/30 11:07
@@ -28,7 +31,8 @@ import java.util.List;
 public class StorageServiceImpl implements StorageService {
     @Autowired
     private StorageInventoryRepository storageInventoryRepository;
-
+    @Autowired
+    private EntityManager entityManager;
 
     /**
      * 更新库存
@@ -68,64 +72,171 @@ public class StorageServiceImpl implements StorageService {
      * @return
      */
     @Override
-    public Page<StorageInventory> findPageByCondition(ConditionQueryStorage conditionQuery) {
-        // 组装页面
-        Pageable pageable = new PageRequest(conditionQuery.getPage() - 1, conditionQuery.getPageSize());
+    public List<StorageInventory> findPageByCondition(ConditionQueryStorage conditionQuery) {
+        StringBuffer stringBuffer = addParameters(conditionQuery);
+        // 加上分页
+        String pageSql = withPage(stringBuffer, conditionQuery);
+        System.err.println("拼接后的sql:" + pageSql);
+        Query query = entityManager.createNativeQuery(pageSql);
+        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List queryResultList = query.getResultList();
 
-        Page<StorageInventory> storagePage;
-        storagePage = queryByParams(conditionQuery, pageable);
-
-        // 改变页码导致的页面为空时，获取最后一页
-        if (storagePage.getContent().size() < 1 && storagePage.getTotalElements() > 0) {
-            pageable = new PageRequest(storagePage.getTotalPages() - 1, conditionQuery.getPageSize());
-            storagePage = queryByParams(conditionQuery, pageable);
-        }
-
-        return storagePage;
+        return inventoryMapper(queryResultList);
     }
 
     /**
-     * 拼接查询条件
+     * 查询总数
      *
      * @param conditionQuery
-     * @param pageable
      * @return
      */
-    private Page<StorageInventory> queryByParams(final ConditionQueryStorage conditionQuery, Pageable pageable) {
-        return storageInventoryRepository.findAll((root, query, cb) -> {
-            // 交集
-            Predicate predicate = cb.conjunction();
-            List<Expression<Boolean>> expressions = predicate.getExpressions();
+    @Override
+    public Long findTotalByCondition(ConditionQueryStorage conditionQuery) {
+        StringBuffer stringBuffer = addParameters(conditionQuery);
+        Query query = entityManager.createNativeQuery(stringBuffer.toString());
+        query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List queryResultList = query.getResultList();
+        return new Long(inventoryMapper(queryResultList).size());
+    }
 
-            // 拼接货物编码
-            if (!StringUtils.isEmpty(conditionQuery.getCargoCode())) {
-                expressions.add(cb.like(root.get("cargo").get("cargoCode").as(String.class), "%" + conditionQuery.getCargoCode() + "%"));
+    /**
+     * 拼接参数
+     *
+     * @param conditionQuery
+     * @return
+     */
+    private StringBuffer addParameters(ConditionQueryStorage conditionQuery) {
+        StringBuffer sql = new StringBuffer("select inventory_id,create_time,update_time,raw_material_code,cargo_code," +
+                "station_code,storage_code,SUM(total_amount) as total_number from storage_inventory where 1=1 ");
+        // 拼接货物编码
+        if (!StringUtil.isEmpty(conditionQuery.getCargoCode())) {
+            sql.append(" and cargo_code like '");
+            sql.append(conditionQuery.getCargoCode() + "'");
+        }
+
+        // 拼接多个货物编码
+        if (conditionQuery.getCargoCodeArray() != null && conditionQuery.getCargoCodeArray().size() > 0) {
+            sql.append(" and cargo_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getCargoCodeArray()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
             }
-            // 拼接多个货物编码
-            if (conditionQuery.getCargoCodeArray() != null && conditionQuery.getCargoCodeArray().size() > 0) {
-                expressions.add(root.get("cargo").get("cargoCode").as(String.class).in(conditionQuery.getCargoCodeArray()));
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(" ) ");
+        }
+
+
+        // 拼接原料编码
+        if (!StringUtil.isEmpty(conditionQuery.getMaterialCode())) {
+            sql.append(" and raw_material_code like '");
+            sql.append(conditionQuery.getMaterialCode() + "'");
+        }
+        // 拼接多个原料名称
+        if (conditionQuery.getMaterialCodeArray() != null && conditionQuery.getMaterialCodeArray().size() > 0) {
+            sql.append(" and raw_material_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getMaterialCodeArray()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
             }
-            // 拼接原料分类
-            if (!StringUtils.isEmpty(conditionQuery.getMaterialTypeArray())) {
-                expressions.add(root.get("rawMaterial").get("rawMaterialCode").as(String.class).in(conditionQuery.getMaterialCodes()));
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(" ) ");
+        }
+        // 拼接多个原料分类
+        if (conditionQuery.getMaterialTypeArray() != null && conditionQuery.getMaterialTypeArray().size() > 0) {
+            sql.append(" and raw_material_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getMaterialCodes()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
             }
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(" ) ");
+        }
+        // 拼接站点
+        if (conditionQuery.getStationCodeArray() != null && conditionQuery.getStationCodeArray().size() > 0) {
+            sql.append(" and station_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getStationCodeArray()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
+            }
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(" ) ");
+        }
+        // 拼接库位
+        if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+            sql.append(" and storage_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getStorageCodeArray()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
+            }
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(" ) ");
+        }
+        sql.append(" GROUP BY cargo_code,station_code,storage_code ");
+
+        return sql;
+    }
+
+    /**
+     * 拼接分页信息
+     *
+     * @param sql
+     * @param conditionQuery
+     * @return
+     */
+    private String withPage(StringBuffer sql, ConditionQueryStorage conditionQuery) {
+        sql.append(" limit ");
+        sql.append(conditionQuery.getPage() * conditionQuery.getPageSize() - conditionQuery.getPageSize());
+        sql.append(",");
+        sql.append(conditionQuery.getPageSize());
+        return sql.toString();
+    }
+
+
+    /**
+     * 映射对象属性
+     *
+     * @param resultList
+     * @return
+     */
+    private List<StorageInventory> inventoryMapper(List resultList) {
+
+        List<StorageInventory> inventoryArrayList = new ArrayList<>();
+        for (Object object : resultList) {
+            Map map = (Map) object;
+            StorageInventory inventory = new StorageInventory();
+            // ID
+            inventory.setInventoryId(Long.valueOf(map.get("inventory_id").toString()));
+            // 创建时间
+            inventory.setCreateTime((java.util.Date) map.get("create_time"));
+            // 修改时间
+            inventory.setUpdateTime((Date) map.get("update_time"));
             // 原料编码
-            if (!StringUtils.isEmpty(conditionQuery.getMaterialCode())) {
-                expressions.add(cb.like(root.get("rawMaterial").get("rawMaterialCode").as(String.class), "%" + conditionQuery.getMaterialCode() + "%"));
-            }
-            // 拼接多个原料编码
-            if (conditionQuery.getMaterialCodeArray() != null && conditionQuery.getMaterialCodeArray().size() > 0) {
-                expressions.add(root.get("rawMaterial").get("rawMaterialCode").as(String.class).in(conditionQuery.getMaterialCodeArray()));
-            }
-            // 拼接查询站点
-            if (conditionQuery.getStationCodeArray() != null && conditionQuery.getStationCodeArray().size() > 0) {
-                expressions.add(root.get("station").get("stationCode").as(String.class).in(conditionQuery.getStationCodeArray()));
-            }
-            // 拼接查询库位
-            if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
-                expressions.add(root.get("station").get("storageCode").as(String.class).in(conditionQuery.getStorageCodeArray()));
-            }
-            return predicate;
-        }, pageable);
+            inventory.setRawMaterial(new RawMaterial(map.get("raw_material_code").toString()));
+            // 货物编码
+            inventory.setCargo(new Cargo(map.get("cargo_code").toString()));
+            // 站点编码和库位编码
+            inventory.setStation(new Station(map.get("station_code").toString(), map.get("storage_code").toString()));
+            // 总数量
+            inventory.setTotalAmount(Integer.valueOf(map.get("total_number").toString()));
+
+            inventoryArrayList.add(inventory);
+        }
+
+        return inventoryArrayList;
     }
 }

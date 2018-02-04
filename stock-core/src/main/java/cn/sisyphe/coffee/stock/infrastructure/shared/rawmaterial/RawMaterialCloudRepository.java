@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author XiongJing
  */
-@FeignClient(value = "COFFEE-BASEINFO", fallback = LocalRawMaterialCloudRepository.class)
+@FeignClient(value = "COFFEE-BASEINFO-TEST", fallback = LocalRawMaterialCloudRepository.class)
 public interface RawMaterialCloudRepository {
 
     /**
@@ -25,7 +25,7 @@ public interface RawMaterialCloudRepository {
      * @param materialCode 原料编码
      * @return
      */
-    @RequestMapping(path = "/api/v1/baseInfo/rawMaterial/findByMaterialCode", method = RequestMethod.GET)
+    @RequestMapping(path = "/api/v1/baseInfo/rawMaterial/findDTOByMaterialCode", method = RequestMethod.GET)
     ResponseResult findByMaterialCode(@RequestParam("materialCode") String materialCode);
 
     /**
