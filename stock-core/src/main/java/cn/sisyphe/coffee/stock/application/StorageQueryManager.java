@@ -137,7 +137,7 @@ public class StorageQueryManager {
                 // 站点名称
                 storageQueryDTO.setStationName(stationName);
             }
-            // 库位名称
+            // 库位名称--前端自己转换
             storageQueryDTO.setStorageName(inventory.getStation().getStorageCode());
         }
         Cargo cargo = null;
@@ -150,7 +150,7 @@ public class StorageQueryManager {
             if (cargo != null) {
                 storageQueryDTO.setCargoName(cargo.getCargoName());
                 // 货物规格
-                storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getStandardUnit());
+                storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getMeasurementName());
             }
         }
         RawMaterial rawMaterial = null;
@@ -222,7 +222,7 @@ public class StorageQueryManager {
             storageQueryDTO.setMaterialName(rawMaterial.getRawMaterialName());
         }
         // 货物规格
-        storageQueryDTO.setStandardName(cargo.getMeasurement() + "/" + cargo.getStandardUnit());
+        storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getMeasurementName());
         // 判断是否是根据货物查询
         if (conditionQuery.getCargoOrMaterial().equals("cargo")) {
             if (offset.getCargo() != null && cargo != null) {
@@ -231,7 +231,7 @@ public class StorageQueryManager {
                 BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
 
                 // 变化量
-                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+ "/" + cargo.getStandardUnit());
+                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+  cargo.getMeasurementName());
             }
         } else {
             // 原料编码

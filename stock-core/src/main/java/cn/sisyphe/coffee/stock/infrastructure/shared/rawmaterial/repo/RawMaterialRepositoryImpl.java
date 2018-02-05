@@ -39,8 +39,8 @@ public class RawMaterialRepositoryImpl implements RawMaterialRepository {
         }
         LinkedHashMap<String, String> materialResultMap = (LinkedHashMap) resultMap.get("rawMaterial");
         RawMaterial rawMaterial = new RawMaterial();
-        rawMaterial.setRawMaterialCode(materialResultMap.get("code"));
-        rawMaterial.setRawMaterialName(materialResultMap.get("name"));
+        rawMaterial.setRawMaterialCode(materialResultMap.get("materialCode"));
+        rawMaterial.setRawMaterialName(materialResultMap.get("materialName"));
         rawMaterial.setStandardUnit(materialResultMap.get("standardUnitName"));
         return rawMaterial;
 

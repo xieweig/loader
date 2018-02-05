@@ -36,6 +36,12 @@ public class Cargo {
     private Integer measurement;
 
     /**
+     * 规格
+     */
+    @Transient
+    private String measurementName;
+
+    /**
      * 标准单位
      */
     @Transient
@@ -102,6 +108,14 @@ public class Cargo {
         this.effectiveTime = effectiveTime;
     }
 
+    public String getMeasurementName() {
+        return measurementName;
+    }
+
+    public void setMeasurementName(String measurementName) {
+        this.measurementName = measurementName;
+    }
+
     @Override
     public String toString() {
         return "Cargo{" +
@@ -109,6 +123,7 @@ public class Cargo {
                 ", cargoName='" + cargoName + '\'' +
                 ", barCode='" + barCode + '\'' +
                 ", measurement=" + measurement +
+                ", measurementName='" + measurementName + '\'' +
                 ", standardUnit='" + standardUnit + '\'' +
                 ", effectiveTime=" + effectiveTime +
                 '}';
