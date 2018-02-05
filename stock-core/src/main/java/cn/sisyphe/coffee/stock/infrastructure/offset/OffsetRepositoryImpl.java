@@ -119,7 +119,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         StringBuffer stringBuffer = addParameters(conditionQuery);
         // 加上分页
         String pageSql = withPage(stringBuffer, conditionQuery);
-        System.err.println("拼接后的sql:"+pageSql);
+        System.err.println("拼接后的sql:" + pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -149,10 +149,11 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * @return
      */
     private StringBuffer addParameters(ConditionQueryStorage conditionQuery) {
-        StringBuffer sql = new StringBuffer("SELECT batch_Code,station_code,storage_code,raw_material_code,cargo_code," +
+        StringBuffer sql = new StringBuffer("SELECT batch_code,station_code,storage_code,raw_material_code,cargo_code," +
                 "inventory_total_amount,total_offset_amount,offset_amount,surplus_amount,unit_cost,source_code," +
                 "in_out_storage,create_time FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         // 拼接开始时间
@@ -224,7 +225,17 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             sql.append(substring);
             sql.append(")");
         }
-        sql.append(" GROUP BY station_code,storage_code,cargo_code) ORDER BY station_code,storage_code,cargo_code");
+        String cargoOrMaterial = conditionQuery.getCargoOrMaterial();
+        if (cargoOrMaterial != null && conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+            sql.append(" GROUP BY station_code,storage_code,");
+        } else {
+            sql.append(" GROUP BY station_code,");
+        }
+        if ("cargo".equals(cargoOrMaterial)) {
+            sql.append(" cargo_code) ORDER BY station_code,storage_code,cargo_code");
+        } else {
+            sql.append(" raw_material_code) ORDER BY station_code,storage_code,raw_material_code");
+        }
 
         return sql;
     }
@@ -255,7 +266,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             Map map = (Map) object;
             Offset offset = new Offset();
             // 批号
-            offset.setBatchCode(map.get("batch_Code").toString());
+            offset.setBatchCode(map.get("batch_code").toString());
             // 站点
             offset.setStation(new Station(map.get("station_code").toString(), map.get("storage_code").toString()));
             // 原料
@@ -275,7 +286,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             // 源单号
             offset.setSourceCode(map.get("source_code").toString());
             // 进出库类型
-            offset.setInOutStorage(InOutStorage.valueOf((Integer)map.get("in_out_storage")));
+            offset.setInOutStorage(InOutStorage.valueOf((Integer) map.get("in_out_storage")));
             // 时间
             offset.setCreateTime((Date) map.get("create_time"));
             offsetList.add(offset);

@@ -232,6 +232,7 @@ public class StorageQueryManager {
 
                 // 变化量
                 storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
+                // 数量
                 storageQueryDTO.setNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
             }
         } else {
@@ -239,9 +240,9 @@ public class StorageQueryManager {
             storageQueryDTO.setMaterialCode(offset.getRawMaterial().getRawMaterialCode());
             if (offset.getRawMaterial() != null && rawMaterial != null) {
                 // 变化量
-                storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + "/" + rawMaterial.getStandardUnit());
-                //
-                storageQueryDTO.setNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + "/" + rawMaterial.getStandardUnit());
+                storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
+                // 数量
+                storageQueryDTO.setNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
             }
         }
         // 单号
