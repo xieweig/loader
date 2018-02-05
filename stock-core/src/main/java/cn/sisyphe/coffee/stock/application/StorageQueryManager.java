@@ -247,7 +247,9 @@ public class StorageQueryManager {
         // 单号
         storageQueryDTO.setBillCode(offset.getSourceCode());
         // 单据类型
-        storageQueryDTO.setBillType(offset.getSourceBillType().name());
+        if (offset.getSourceBillType() != null) {
+            storageQueryDTO.setBillType(offset.getSourceBillType().name());
+        }
 
         Station outStation = offset.getOutStation();
         if (outStation != null) {
