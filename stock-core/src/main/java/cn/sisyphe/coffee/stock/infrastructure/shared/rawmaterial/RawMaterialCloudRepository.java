@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author XiongJing
  */
-@FeignClient(value = "COFFEE-BASEINFO-TEST", fallback = LocalRawMaterialCloudRepository.class)
+@FeignClient(value = "COFFEE-BASEINFO", fallback = LocalRawMaterialCloudRepository.class)
 public interface RawMaterialCloudRepository {
 
     /**
