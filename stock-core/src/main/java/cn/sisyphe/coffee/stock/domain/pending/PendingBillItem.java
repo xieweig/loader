@@ -1,5 +1,6 @@
 package cn.sisyphe.coffee.stock.domain.pending;
 
+import cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.BaseEntity;
 import cn.sisyphe.coffee.stock.domain.shared.station.Station;
@@ -80,6 +81,11 @@ public class PendingBillItem extends BaseEntity {
     @JoinColumn(name = "itemCode", referencedColumnName = "itemCode")
     private List<PendingBillDetail> pendingBillDetailList;
 
+    /**
+     * 来源单据的类型
+     */
+    private BillTypeEnum sourceBillType;
+
     public String getItemCode() {
         return itemCode;
     }
@@ -128,6 +134,14 @@ public class PendingBillItem extends BaseEntity {
 
     public void setPendingBillDetailList(List<PendingBillDetail> pendingBillDetailList) {
         this.pendingBillDetailList = pendingBillDetailList;
+    }
+
+    public BillTypeEnum getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(BillTypeEnum sourceBillType) {
+        this.sourceBillType = sourceBillType;
     }
 
     @Override
