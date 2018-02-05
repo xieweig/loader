@@ -79,7 +79,7 @@ public class StorageQueryDTO {
     /**
      * 出库库位
      */
-    private String putStorageCode;
+    private String outStorageCode;
 
     /**
      * 入库站点
@@ -196,12 +196,12 @@ public class StorageQueryDTO {
         this.outStationName = outStationName;
     }
 
-    public String getPutStorageCode() {
-        return putStorageCode;
+    public String getOutStorageCode() {
+        return outStorageCode;
     }
 
-    public void setPutStorageCode(String putStorageCode) {
-        this.putStorageCode = putStorageCode;
+    public void setOutStorageCode(String outStorageCode) {
+        this.outStorageCode = outStorageCode;
     }
 
     public String getInStationName() {
@@ -236,7 +236,7 @@ public class StorageQueryDTO {
                 ", billType='" + billType + '\'' +
                 ", billCode='" + billCode + '\'' +
                 ", outStationName='" + outStationName + '\'' +
-                ", putStorageCode='" + putStorageCode + '\'' +
+                ", outStorageCode='" + outStorageCode + '\'' +
                 ", inStationName='" + inStationName + '\'' +
                 ", inStorageName='" + inStorageName + '\'' +
                 '}';
