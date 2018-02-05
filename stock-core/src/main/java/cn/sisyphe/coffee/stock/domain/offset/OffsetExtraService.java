@@ -27,4 +27,22 @@ public interface OffsetExtraService {
      * @return
      */
     Long findTotalByCondition(ConditionQueryStorage conditionQuery);
+
+
+
+    /**
+     * 高级条件查询
+     *
+     * @param conditionQuery
+     * @return
+     */
+    List<Offset> findByConditionToStorage(ConditionQueryStorage conditionQuery);
+
+    /**
+     * 查询总数
+     *
+     * @param conditionQuery
+     * @return
+     */
+    Long findTotalByConditionToStorage(ConditionQueryStorage conditionQuery);
 }

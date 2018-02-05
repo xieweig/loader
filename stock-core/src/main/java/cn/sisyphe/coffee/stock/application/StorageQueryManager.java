@@ -62,7 +62,7 @@ public class StorageQueryManager {
 
         // 判断截止时间，如果有，则是查询历史库存
         if (conditionQuery.getStopTimeEnd() != null) {
-            List<Offset> offsetList = offsetExtraService.findPageByCondition(conditionQuery);
+            List<Offset> offsetList = offsetExtraService.findByConditionToStorage(conditionQuery);
             List<StorageQueryDTO> storageQueryDTOs = new ArrayList<>();
             for (Offset offset : offsetList) {
                 // 转换为前端显示的属性
@@ -70,7 +70,7 @@ public class StorageQueryManager {
                 storageQueryDTOs.add(mapDTO);
             }
             dto.setContent(storageQueryDTOs);
-            dto.setTotalNumber(offsetExtraService.findTotalByCondition(conditionQuery));
+            dto.setTotalNumber(offsetExtraService.findTotalByConditionToStorage(conditionQuery));
             return dto;
         }
         // 如果没有，则是查询最新库存
@@ -232,8 +232,11 @@ public class StorageQueryManager {
 
                 // 变化量
                 storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
+
                 // 数量
-                storageQueryDTO.setNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
+                BigDecimal totalAmountC = BigDecimal.valueOf(offset.getInventoryTotalAmount());
+                BigDecimal scale = totalAmountC.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
+                storageQueryDTO.setNumber(scale.toString());
             }
         } else {
             // 原料编码
@@ -242,9 +245,11 @@ public class StorageQueryManager {
                 // 变化量
                 storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
                 // 数量
-                storageQueryDTO.setNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
+                storageQueryDTO.setNumber(offset.getInventoryTotalAmount() + rawMaterial.getStandardUnit());
             }
         }
+
+
         // 单号
         storageQueryDTO.setBillCode(offset.getSourceCode());
         // 单据类型

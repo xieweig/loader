@@ -32,4 +32,14 @@ public class OffsetExtraServiceImpl implements OffsetExtraService {
         return offsetRepository.findTotalByCondition(conditionQuery);
     }
 
+    @Override
+    public List<Offset> findByConditionToStorage(ConditionQueryStorage conditionQuery) {
+        return offsetRepository.findByConditionToStorage(conditionQuery);
+    }
+
+    @Override
+    public Long findTotalByConditionToStorage(ConditionQueryStorage conditionQuery) {
+        return offsetRepository.findTotalByConditionToStorage(conditionQuery);
+    }
+
 }
