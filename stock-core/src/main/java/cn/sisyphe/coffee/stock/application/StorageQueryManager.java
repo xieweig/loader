@@ -231,7 +231,8 @@ public class StorageQueryManager {
                 BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
 
                 // 变化量
-                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+  cargo.getMeasurementName());
+                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
+                storageQueryDTO.setNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
             }
         } else {
             // 原料编码
@@ -239,15 +240,29 @@ public class StorageQueryManager {
             if (offset.getRawMaterial() != null && rawMaterial != null) {
                 // 变化量
                 storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + "/" + rawMaterial.getStandardUnit());
+                //
+                storageQueryDTO.setNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + "/" + rawMaterial.getStandardUnit());
             }
         }
-        // 单据类型
-        storageQueryDTO.setBillType("单据类型");
         // 单号
         storageQueryDTO.setBillCode(offset.getSourceCode());
-        // 变化原因
-        storageQueryDTO.setChangeMemo("变化原因");
+        // 单据类型
+        storageQueryDTO.setBillType(offset.getSourceBillType().name());
 
+        Station outStation = offset.getOutStation();
+        if (outStation != null) {
+            // 出库站点
+            storageQueryDTO.setOutStationName(outStation.getStationName());
+            // 出库库房
+            storageQueryDTO.setOutStationName(outStation.getStorageCode());
+        }
+        Station inStation = offset.getInStation();
+        if (inStation != null) {
+            // 入库站点
+            storageQueryDTO.setInStationName(inStation.getStationName());
+            // 入库库房
+            storageQueryDTO.setInStorageName(inStation.getStorageCode());
+        }
         return storageQueryDTO;
     }
 

@@ -186,7 +186,11 @@ public class StorageServiceImpl implements StorageService {
             sql.append(substring);
             sql.append(" ) ");
         }
-        sql.append(" GROUP BY cargo_code,station_code,storage_code ");
+        if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
+            sql.append(" GROUP BY cargo_code,station_code,storage_code ");
+        } else {
+            sql.append(" GROUP BY raw_material_code,station_code,storage_code ");
+        }
 
         return sql;
     }

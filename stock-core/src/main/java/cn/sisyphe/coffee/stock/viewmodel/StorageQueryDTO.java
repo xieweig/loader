@@ -72,9 +72,25 @@ public class StorageQueryDTO {
     private String billCode;
 
     /**
-     * 变化原因
+     * 出库站点
      */
-    private String changeMemo;
+    private String outStationName;
+
+    /**
+     * 出库库位
+     */
+    private String putStorageCode;
+
+    /**
+     * 入库站点
+     */
+    private String inStationName;
+
+    /**
+     * 入库库位
+     */
+    private String inStorageName;
+
 
     public Date getStopTime() {
         return stopTime;
@@ -172,12 +188,36 @@ public class StorageQueryDTO {
         this.billCode = billCode;
     }
 
-    public String getChangeMemo() {
-        return changeMemo;
+    public String getOutStationName() {
+        return outStationName;
     }
 
-    public void setChangeMemo(String changeMemo) {
-        this.changeMemo = changeMemo;
+    public void setOutStationName(String outStationName) {
+        this.outStationName = outStationName;
+    }
+
+    public String getPutStorageCode() {
+        return putStorageCode;
+    }
+
+    public void setPutStorageCode(String putStorageCode) {
+        this.putStorageCode = putStorageCode;
+    }
+
+    public String getInStationName() {
+        return inStationName;
+    }
+
+    public void setInStationName(String inStationName) {
+        this.inStationName = inStationName;
+    }
+
+    public String getInStorageName() {
+        return inStorageName;
+    }
+
+    public void setInStorageName(String inStorageName) {
+        this.inStorageName = inStorageName;
     }
 
     @Override
@@ -195,7 +235,10 @@ public class StorageQueryDTO {
                 ", changeNumber='" + changeNumber + '\'' +
                 ", billType='" + billType + '\'' +
                 ", billCode='" + billCode + '\'' +
-                ", changeMemo='" + changeMemo + '\'' +
+                ", outStationName='" + outStationName + '\'' +
+                ", putStorageCode='" + putStorageCode + '\'' +
+                ", inStationName='" + inStationName + '\'' +
+                ", inStorageName='" + inStorageName + '\'' +
                 '}';
     }
 }
