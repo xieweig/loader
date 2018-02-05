@@ -184,8 +184,8 @@ public class StationParser implements BillParser {
     private void mapTotalAmount(JSONObject billDetail, PendingBillDetail pendingBillDetail) {
         if (pendingBillDetail.getCargo() != null) {
             Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
-            Integer measurement = cargo.getMeasurement();
-            if (measurement != null) {
+            if (cargo != null && cargo.getMeasurement() != null) {
+                Integer measurement = cargo.getMeasurement();
                 pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount() * measurement);
                 pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
                 return;
