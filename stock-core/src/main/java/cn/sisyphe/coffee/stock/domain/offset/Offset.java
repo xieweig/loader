@@ -1,5 +1,6 @@
 package cn.sisyphe.coffee.stock.domain.offset;
 
+import cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.BaseEntity;
 import cn.sisyphe.coffee.stock.domain.shared.station.Station;
@@ -8,7 +9,10 @@ import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -104,9 +108,36 @@ public class Offset extends BaseEntity {
     @Column(updatable = false)
     private Integer inOutStorage;
 
+
+    /**
+     * 调入站点
+     */
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "stationCode", column = @Column(name = "in_station_code")),
+            @AttributeOverride(name = "storageCode", column = @Column(name = "in_storage_code"))
+    })
+    private Station inStation;
+
+    /**
+     * 调出站点
+     */
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "stationCode", column = @Column(name = "out_station_code")),
+            @AttributeOverride(name = "storageCode", column = @Column(name = "out_storage_code"))
+    })
+    private Station outStation;
     public Long getOffsetId() {
         return offsetId;
     }
+
+
+    /**
+     * 来源单据的类型
+     */
+    private BillTypeEnum sourceBillType;
+
 
     public void setOffsetId(Long offsetId) {
         this.offsetId = offsetId;
@@ -208,10 +239,34 @@ public class Offset extends BaseEntity {
         this.inOutStorage = inOutStorage.getValue();
     }
 
+    public Station getInStation() {
+        return inStation;
+    }
+
+    public void setInStation(Station inStation) {
+        this.inStation = inStation;
+    }
+
+    public Station getOutStation() {
+        return outStation;
+    }
+
+    public void setOutStation(Station outStation) {
+        this.outStation = outStation;
+    }
+
+    public BillTypeEnum getSourceBillType() {
+        return sourceBillType;
+    }
+
+    public void setSourceBillType(BillTypeEnum sourceBillType) {
+        this.sourceBillType = sourceBillType;
+    }
+
     @Override
     public String toString() {
         return "Offset{" +
-                "offsetId='" + offsetId + '\'' +
+                "offsetId=" + offsetId +
                 ", batchCode='" + batchCode + '\'' +
                 ", station=" + station +
                 ", rawMaterial=" + rawMaterial +
@@ -224,6 +279,9 @@ public class Offset extends BaseEntity {
                 ", expirationTime=" + expirationTime +
                 ", sourceCode='" + sourceCode + '\'' +
                 ", inOutStorage=" + inOutStorage +
+                ", inStation=" + inStation +
+                ", outStation=" + outStation +
+                ", sourceBillType=" + sourceBillType +
                 "} " + super.toString();
     }
 
@@ -248,12 +306,15 @@ public class Offset extends BaseEntity {
                 Objects.equals(unitCost, offset.unitCost) &&
                 Objects.equals(expirationTime, offset.expirationTime) &&
                 Objects.equals(sourceCode, offset.sourceCode) &&
-                Objects.equals(inOutStorage, offset.inOutStorage);
+                Objects.equals(inOutStorage, offset.inOutStorage) &&
+                Objects.equals(inStation, offset.inStation) &&
+                Objects.equals(outStation, offset.outStation) &&
+                sourceBillType == offset.sourceBillType;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(offsetId, batchCode, station, rawMaterial, cargo, inventoryTotalAmount, totalOffsetAmount, offsetAmount, surplusAmount, unitCost, expirationTime, sourceCode, inOutStorage);
+        return Objects.hash(offsetId, batchCode, station, rawMaterial, cargo, inventoryTotalAmount, totalOffsetAmount, offsetAmount, surplusAmount, unitCost, expirationTime, sourceCode, inOutStorage, inStation, outStation, sourceBillType);
     }
 }

@@ -186,7 +186,8 @@ public class MoveStockService implements StockService {
         Set<Offset> offsetList = new LinkedHashSet<>();
 
         // 入库
-        offsetList.add(offsetService.createByPendingDetail(detail, pendingBillItem.getInStation(), detail.getActualTotalAmount(), InOutStorage.IN_STORAGE));
+        offsetList.add(offsetService.createByPendingDetail(detail, pendingBillItem.getInStation(), detail.getActualTotalAmount(), InOutStorage.IN_STORAGE
+                , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         // 误差库
         Station station = new Station();
@@ -194,7 +195,8 @@ public class MoveStockService implements StockService {
         station.setStorageCode(StorageConfiguration.MISTAKE_STORAGE);
 
         // 误差冲减
-        offsetList.add(offsetService.createByPendingDetail(detail, station, -amount, InOutStorage.IN_STORAGE));
+        offsetList.add(offsetService.createByPendingDetail(detail, station, -amount, InOutStorage.IN_STORAGE
+                , station, pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         return offsetList;
     }
@@ -212,7 +214,8 @@ public class MoveStockService implements StockService {
 
         // 更新已冲减数据
         offsetList.add(offsetting);
-        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getOutStation(), amount, InOutStorage.OUT_STORAGE));
+        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getOutStation(), amount, InOutStorage.OUT_STORAGE
+                , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         // 误差库
         Station station = new Station();
@@ -220,7 +223,8 @@ public class MoveStockService implements StockService {
         station.setStorageCode(StorageConfiguration.MISTAKE_STORAGE);
 
         // 误差冲减数据
-        offsetList.add(offsetService.createByOffsetting(offsetting, station, amount, InOutStorage.IN_STORAGE));
+        offsetList.add(offsetService.createByOffsetting(offsetting, station, amount, InOutStorage.IN_STORAGE
+                , station, pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         return offsetList;
     }
@@ -237,9 +241,11 @@ public class MoveStockService implements StockService {
         // 待冲减数据
         offsetList.add(offsetting);
         // 出库
-        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getOutStation(), amount, InOutStorage.OUT_STORAGE));
+        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getOutStation(), amount, InOutStorage.OUT_STORAGE
+                , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
         // 入库
-        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getInStation(), amount, InOutStorage.IN_STORAGE));
+        offsetList.add(offsetService.createByOffsetting(offsetting, pendingBillItem.getInStation(), amount, InOutStorage.IN_STORAGE
+                , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         return offsetList;
     }

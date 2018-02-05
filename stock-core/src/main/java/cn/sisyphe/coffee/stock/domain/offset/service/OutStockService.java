@@ -119,7 +119,8 @@ public class OutStockService implements StockService {
         // 更新已冲减数据
         offsetList.add(offsetting);
         // 新增出库冲减
-        offsetList.add(offsetService.createByOffsetting(offsetting, offsetting.getStation(), amount, InOutStorage.OUT_STORAGE));
+        offsetList.add(offsetService.createByOffsetting(offsetting, offsetting.getStation(), amount, InOutStorage.OUT_STORAGE
+                , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
 
         return offsetList;
     }

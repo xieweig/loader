@@ -8,6 +8,7 @@ import cn.sisyphe.coffee.stock.domain.offset.service.StockService;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
+import cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
@@ -70,7 +71,7 @@ public class OffsetService {
         }
 
 
-        if (pendingBill.getOffset()){
+        if (pendingBill.getOffset()) {
             // 处理完成，清除明细
             pendingBill.getPendingBillItemList().clear();
             offsetDataPersistence.getPendingRepository().save(pendingBill);
@@ -110,12 +111,16 @@ public class OffsetService {
 
     /**
      * 根据待冲减明细创建冲减
-     *
      * @param offsetting
+     * @param station
      * @param amount
+     * @param inOutStorage
+     * @param inStation
+     * @param outStation
+     * @param billTypeEnum
      * @return
      */
-    public Offset createByOffsetting(Offset offsetting, Station station, int amount, InOutStorage inOutStorage) {
+    public Offset createByOffsetting(Offset offsetting, Station station, int amount, InOutStorage inOutStorage, Station inStation, Station outStation, BillTypeEnum billTypeEnum) {
         Offset offset = new Offset();
 
         offset.setBatchCode(offsetting.getBatchCode());
@@ -147,6 +152,12 @@ public class OffsetService {
         offset.setTotalOffsetAmount(amount);
         offset.setSourceCode(pendingBill.getBillCode());
 
+        // 显示数据
+        offset.setSourceBillType(billTypeEnum);
+        offset.setInStation(inStation);
+        offset.setOutStation(outStation);
+
+
         // 更新库存量
         offsetDataPersistence.getStorageService().updateInventory(station, offset.getCargo(), offset.getRawMaterial(), offset.getInventoryTotalAmount());
         return offset;
@@ -154,13 +165,16 @@ public class OffsetService {
 
     /**
      * 根据待处理明细创建冲减
-     *
      * @param detail
      * @param station
      * @param amount
+     * @param inOutStorage
+     * @param inStation
+     * @param outStation
+     * @param billTypeEnum
      * @return
      */
-    public Offset createByPendingDetail(PendingBillDetail detail, Station station, int amount, InOutStorage inOutStorage) {
+    public Offset createByPendingDetail(PendingBillDetail detail, Station station, int amount, InOutStorage inOutStorage, Station inStation, Station outStation, BillTypeEnum billTypeEnum) {
         Offset offset = new Offset();
 
         // 无来源入库 查询最近未冲减的资料
@@ -194,10 +208,13 @@ public class OffsetService {
         }
         offset.setSourceCode(pendingBill.getBillCode());
 
+        // 显示数据
+        offset.setSourceBillType(billTypeEnum);
+        offset.setInStation(inStation);
+        offset.setOutStation(outStation);
 
         // 更新库存量
         offsetDataPersistence.getStorageService().updateInventory(station, offset.getCargo(), offset.getRawMaterial(), offset.getInventoryTotalAmount());
-
         return offset;
     }
 

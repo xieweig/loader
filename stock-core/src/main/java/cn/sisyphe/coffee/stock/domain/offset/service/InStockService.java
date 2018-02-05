@@ -90,7 +90,8 @@ public class InStockService implements StockService {
             }
 
             // 入库
-            inStockOffsetList.add(offsetService.createByPendingDetail(detail, pendingBillItem.getInStation(), detail.getActualTotalAmount(), InOutStorage.IN_STORAGE));
+            inStockOffsetList.add(offsetService.createByPendingDetail(detail, pendingBillItem.getInStation(), detail.getActualTotalAmount(), InOutStorage.IN_STORAGE
+                    , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
         }
 
         // 保存冲减
@@ -109,7 +110,8 @@ public class InStockService implements StockService {
 
         for (Offset outOffset : outStockOffsetList) {
             // 通过出库冲减生成入库冲减
-            inStockOffsetList.add(offsetService.createByOffsetting(outOffset, pendingBillItem.getInStation(), outOffset.getTotalOffsetAmount(), InOutStorage.IN_STORAGE));
+            inStockOffsetList.add(offsetService.createByOffsetting(outOffset, pendingBillItem.getInStation(), outOffset.getTotalOffsetAmount(), InOutStorage.IN_STORAGE
+                    , pendingBillItem.getInStation(), pendingBillItem.getOutStation(), pendingBillItem.getSourceBillType()));
         }
 
         // 保存冲减
