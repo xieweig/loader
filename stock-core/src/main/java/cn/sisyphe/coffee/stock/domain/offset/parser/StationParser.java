@@ -151,9 +151,11 @@ public class StationParser implements BillParser {
         Station station = new Station();
         if (jsonObject.containsKey("stationCode")) {
             station.setStationCode(jsonObject.getString("stationCode"));
+            station.setStationName(getShareManager().findStationNameByStationCode(jsonObject.getString("stationCode")));
         }
         if (jsonObject.containsKey("supplierCode")) {
             station.setStationCode(jsonObject.getString("supplierCode"));
+            station.setStationName(getShareManager().findSupplierNameBySupplierCode(jsonObject.getString("supplierCode")));
         }
         if (jsonObject.containsKey("storage")) {
             Storage storage = new Storage();
