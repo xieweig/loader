@@ -68,7 +68,13 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-feign</artifactId>
         </dependency>
-
+        <!-- auth start -->
+        <dependency>
+            <groupId>cn.sisyphe.framework</groupId>
+            <artifactId>framework-auth-logic</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- auth end -->
     </dependencies>
 
     <dependencyManagement>
