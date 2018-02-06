@@ -269,14 +269,16 @@ public class StorageQueryManager {
         Station outStation = offset.getOutStation();
         if (outStation != null) {
             // 出库站点
-            storageQueryDTO.setOutStationName(outStation.getStationName());
+            String stationName = findStationName(outStation.getStationCode());
+            storageQueryDTO.setOutStationName(stationName);
             // 出库库房
             storageQueryDTO.setOutStationName(outStation.getStorageCode());
         }
         Station inStation = offset.getInStation();
         if (inStation != null) {
             // 入库站点
-            storageQueryDTO.setInStationName(inStation.getStationName());
+            String stationName = findStationName(inStation.getStationCode());
+            storageQueryDTO.setInStationName(stationName);
             // 入库库房
             storageQueryDTO.setInStorageName(inStation.getStorageCode());
         }

@@ -1,6 +1,7 @@
 package cn.sisyphe.coffee.stock.infrastructure.offset;
 
 import cn.sisyphe.coffee.stock.domain.offset.Offset;
+import cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -115,9 +115,9 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * @return
      */
     private StringBuffer queryOffsetHeard() {
-        StringBuffer sql = new StringBuffer("SELECT batch_code,station_code,storage_code,raw_material_code,cargo_code," +
-                "inventory_total_amount,total_offset_amount,offset_amount,surplus_amount,unit_cost,source_code," +
-                "in_out_storage,create_time FROM offset " +
+        StringBuffer sql = new StringBuffer("SELECT station_code,storage_code,raw_material_code,cargo_code," +
+                "inventory_total_amount,total_offset_amount,source_code,in_out_storage,create_time," +
+                "source_bill_type,in_station_code,in_storage_code,out_station_code,out_storage_code FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
         return sql;
     }
@@ -432,10 +432,6 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         for (Object object : resultList) {
             Map map = (Map) object;
             Offset offset = new Offset();
-            // 批号
-            if (map.get("batch_code") != null) {
-                offset.setBatchCode(map.get("batch_code").toString());
-            }
             // 站点
             if (map.get("storage_code") != null) {
                 offset.setStation(new Station(map.get("station_code").toString(), map.get("storage_code").toString()));
@@ -462,18 +458,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             if (map.get("total_offset_amount") != null) {
                 offset.setTotalOffsetAmount((Integer) map.get("total_offset_amount"));
             }
-            // 已冲减数量
-            if (map.get("offset_amount") != null) {
-                offset.setOffsetAmount((Integer) map.get("offset_amount"));
-            }
-            // 剩余未冲减数量
-            if (map.get("surplus_amount") != null) {
-                offset.setSurplusAmount((Integer) map.get("surplus_amount"));
-            }
-            // 成本金额
-            if (map.get("unit_cost") != null) {
-                offset.setUnitCost((BigDecimal) map.get("unit_cost"));
-            }
+
             // 源单号
             if (map.get("source_code") != null) {
                 offset.setSourceCode(map.get("source_code").toString());
@@ -484,6 +469,18 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             }
             // 时间
             offset.setCreateTime((Date) map.get("create_time"));
+            // 单据类型
+            if (map.get("source_bill_type") != null) {
+                offset.setSourceBillType(BillTypeEnum.valueOf(map.get("source_bill_type").toString()));
+            }
+            // 入库站点-入库库位
+            if (map.get("in_station_code") != null && (map.get("in_storage_code") != null)) {
+                offset.setInStation(new Station(map.get("in_station_code").toString(), map.get("in_storage_code").toString()));
+            }
+            // 出库站点-出库库位
+            if (map.get("out_station_code") != null && map.get("out_storage_code") != null) {
+                offset.setOutStation(new Station(map.get("out_station_code").toString(), map.get("out_storage_code").toString()));
+            }
             offsetList.add(offset);
         }
 

@@ -2,6 +2,7 @@ package cn.sisyphe.coffee.stock.controller;
 
 import cn.sisyphe.coffee.stock.application.StorageQueryManager;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
+import cn.sisyphe.coffee.stock.viewmodel.StorageDTO;
 import cn.sisyphe.framework.web.ResponseResult;
 import cn.sisyphe.framework.web.exception.DataException;
 import io.swagger.annotations.Api;
@@ -37,7 +38,8 @@ public class StorageQueryController {
     public ResponseResult findNowByCondition(@RequestBody ConditionQueryStorage conditionQuery) {
         ResponseResult responseResult = new ResponseResult();
         try {
-            responseResult.put("result", storageQueryManager.findNowByCondition(conditionQuery));
+            StorageDTO nowByCondition = storageQueryManager.findNowByCondition(conditionQuery);
+            responseResult.put("result", nowByCondition);
         } catch (DataException e) {
             responseResult.putException(e);
         }
