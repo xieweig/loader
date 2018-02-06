@@ -2,9 +2,9 @@ package cn.sisyphe.coffee.stock.infrastructure.offset;
 
 import cn.sisyphe.coffee.stock.domain.offset.Offset;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
-import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.infrastructure.offset.jpa.JPAOffsetRepository;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import cn.sisyphe.framework.common.utils.StringUtil;
@@ -130,12 +130,15 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      */
     @Override
     public List<Offset> findByCondition(ConditionQueryStorage conditionQuery) {
+        // 拼接查询头
         StringBuffer sql = queryOffsetHeard();
+        // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
+        // 拼接查询脚
         StringBuffer foot = queryOffsetFoot(stringBuffer, conditionQuery);
         // 加上分页
         String pageSql = withPage(foot, conditionQuery);
-        System.err.println("拼接后的sql:" + pageSql);
+        System.err.println("历史库存查询-拼接后的sql:" + pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -150,8 +153,11 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      */
     @Override
     public Long findTotalByCondition(ConditionQueryStorage conditionQuery) {
+        // 拼接查询头
         StringBuffer sql = queryOffsetHeard();
+        // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
+        // 拼接查询脚
         StringBuffer foot = queryOffsetFoot(stringBuffer, conditionQuery);
         Query query = entityManager.createNativeQuery(foot.toString());
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -161,15 +167,45 @@ public class OffsetRepositoryImpl implements OffsetRepository {
 
 
     /**
-     * 库存查询中的历史库存
+     * 库存查询中的历史库存有选库位
      */
-    private StringBuffer queryStorageHeard() {
-        StringBuffer sql = new StringBuffer("SELECT batch_code,station_code,storage_code,raw_material_code,cargo_code," +
-                "total_offset_amount,offset_amount,surplus_amount,unit_cost,source_code," +
-                "in_out_storage,create_time,sum(inventory_total_amount) as total FROM offset " +
+    private StringBuffer queryStorageHeardHasStorageToCargo() {
+        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,storage_code,cargo_code,raw_material_code," +
+                "sum(inventory_total_amount) as total  FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
         return sql;
     }
+
+    /**
+     * 库存查询中的历史库存有选库位
+     */
+    private StringBuffer queryStorageHeardHasStorageToMaterial() {
+        StringBuffer sql = new StringBuffer("SELECT  create_time,storage_code,station_code,raw_material_code," +
+                "sum(inventory_total_amount) as total  FROM offset " +
+                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+        return sql;
+    }
+
+    /**
+     * 库存查询中的历史库存没有选库位
+     */
+    private StringBuffer queryStorageHeardNoStorageToCargo() {
+        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,cargo_code,raw_material_code," +
+                "sum(inventory_total_amount) as total  FROM offset " +
+                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+        return sql;
+    }
+
+    /**
+     * 库存查询中的历史库存没有选库位
+     */
+    private StringBuffer queryStorageHeardNoStorageToMaterial() {
+        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,raw_material_code," +
+                "sum(inventory_total_amount) as total  FROM offset " +
+                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+        return sql;
+    }
+
 
     /**
      * 供实时库存调用
@@ -179,12 +215,30 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      */
     @Override
     public List<Offset> findByConditionToStorage(ConditionQueryStorage conditionQuery) {
-        StringBuffer sql = queryStorageHeard();
+        StringBuffer sql;
+        if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
+                sql = queryStorageHeardHasStorageToCargo();
+                // 拼接查询头
+            } else {
+                sql = queryStorageHeardHasStorageToMaterial();
+            }
+        } else {
+            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
+                sql = queryStorageHeardNoStorageToCargo();
+                // 拼接查询头
+            } else {
+                sql = queryStorageHeardNoStorageToMaterial();
+            }
+        }
+
+        // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
+        // 拼接查询脚
         StringBuffer foot = queryStorageFoot(stringBuffer, conditionQuery);
         // 加上分页
         String pageSql = withPage(foot, conditionQuery);
-        System.err.println("拼接后的sql:" + pageSql);
+        System.err.println("供实时库存调用-拼接后的sql:" + pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -199,8 +253,26 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      */
     @Override
     public Long findTotalByConditionToStorage(ConditionQueryStorage conditionQuery) {
-        StringBuffer sql = queryStorageHeard();
+        // 拼接查询头
+        StringBuffer sql;
+        if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
+                sql = queryStorageHeardHasStorageToCargo();
+                // 拼接查询头
+            } else {
+                sql = queryStorageHeardHasStorageToMaterial();
+            }
+        } else {
+            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
+                sql = queryStorageHeardNoStorageToCargo();
+                // 拼接查询头
+            } else {
+                sql = queryStorageHeardNoStorageToMaterial();
+            }
+        }
+        // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
+        // 拼接查询脚
         StringBuffer foot = queryStorageFoot(stringBuffer, conditionQuery);
         Query query = entityManager.createNativeQuery(foot.toString());
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -319,9 +391,17 @@ public class OffsetRepositoryImpl implements OffsetRepository {
     private StringBuffer queryStorageFoot(StringBuffer sql, ConditionQueryStorage conditionQuery) {
         String cargoOrMaterial = conditionQuery.getCargoOrMaterial();
         if ("cargo".equals(cargoOrMaterial)) {
-            sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY station_code,cargo_code ");
+            if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,storage_code,cargo_code,raw_material_code ");
+            } else {
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,cargo_code,raw_material_code ");
+            }
         } else {
-            sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY station_code,raw_material_code ");
+            if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,storage_code,raw_material_code ");
+            } else {
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,raw_material_code ");
+            }
         }
         return sql;
     }
@@ -353,31 +433,55 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             Map map = (Map) object;
             Offset offset = new Offset();
             // 批号
-            offset.setBatchCode(map.get("batch_code").toString());
+            if (map.get("batch_code") != null) {
+                offset.setBatchCode(map.get("batch_code").toString());
+            }
             // 站点
-            offset.setStation(new Station(map.get("station_code").toString(), map.get("storage_code").toString()));
+            if (map.get("storage_code") != null) {
+                offset.setStation(new Station(map.get("station_code").toString(), map.get("storage_code").toString()));
+            } else {
+                offset.setStation(new Station(map.get("station_code").toString(), null));
+            }
             // 原料
-            offset.setRawMaterial(new RawMaterial(map.get("raw_material_code").toString()));
+            if (map.get("raw_material_code") != null) {
+                offset.setRawMaterial(new RawMaterial(map.get("raw_material_code").toString()));
+            }
             // 货物
-            offset.setCargo(new Cargo(map.get("cargo_code").toString()));
+            if (map.get("cargo_code") != null) {
+                offset.setCargo(new Cargo(map.get("cargo_code").toString()));
+            }
             // 当前货物库存总量
             if (flag) {
-                offset.setInventoryTotalAmount((Integer) map.get("inventory_total_amount"));
+                if (map.get("inventory_total_amount") != null) {
+                    offset.setInventoryTotalAmount((Integer) map.get("inventory_total_amount"));
+                }
             } else {
                 offset.setInventoryTotalAmount(Integer.valueOf(map.get("total").toString()));
             }
             // 本次货物冲减总量
-            offset.setTotalOffsetAmount((Integer) map.get("total_offset_amount"));
+            if (map.get("total_offset_amount") != null) {
+                offset.setTotalOffsetAmount((Integer) map.get("total_offset_amount"));
+            }
             // 已冲减数量
-            offset.setOffsetAmount((Integer) map.get("offset_amount"));
+            if (map.get("offset_amount") != null) {
+                offset.setOffsetAmount((Integer) map.get("offset_amount"));
+            }
             // 剩余未冲减数量
-            offset.setSurplusAmount((Integer) map.get("surplus_amount"));
+            if (map.get("surplus_amount") != null) {
+                offset.setSurplusAmount((Integer) map.get("surplus_amount"));
+            }
             // 成本金额
-            offset.setUnitCost((BigDecimal) map.get("unit_cost"));
+            if (map.get("unit_cost") != null) {
+                offset.setUnitCost((BigDecimal) map.get("unit_cost"));
+            }
             // 源单号
-            offset.setSourceCode(map.get("source_code").toString());
+            if (map.get("source_code") != null) {
+                offset.setSourceCode(map.get("source_code").toString());
+            }
             // 进出库类型
-            offset.setInOutStorage(InOutStorage.valueOf((Integer) map.get("in_out_storage")));
+            if (map.get("in_out_storage") != null) {
+                offset.setInOutStorage(InOutStorage.valueOf((Integer) map.get("in_out_storage")));
+            }
             // 时间
             offset.setCreateTime((Date) map.get("create_time"));
             offsetList.add(offset);

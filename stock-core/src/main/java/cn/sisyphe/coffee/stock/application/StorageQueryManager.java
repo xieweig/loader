@@ -222,28 +222,37 @@ public class StorageQueryManager {
             storageQueryDTO.setMaterialName(rawMaterial.getRawMaterialName());
         }
         // 货物规格
-        storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getMeasurementName());
+        if (cargo != null) {
+            storageQueryDTO.setStandardName(cargo.getMeasurement() + cargo.getMeasurementName());
+        }
         // 判断是否是根据货物查询
         if (conditionQuery.getCargoOrMaterial().equals("cargo")) {
             if (offset.getCargo() != null && cargo != null) {
-                BigDecimal totalOffsetAmountA = BigDecimal.valueOf(offset.getTotalOffsetAmount());
-                BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
-                BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
+                if (offset.getTotalOffsetAmount() != null) {
+                    BigDecimal totalOffsetAmountA = BigDecimal.valueOf(offset.getTotalOffsetAmount());
+                    BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
+                    BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    // 变化量
+                    storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
 
-                // 变化量
-                storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
+                }
 
-                // 数量
-                BigDecimal totalAmountC = BigDecimal.valueOf(offset.getInventoryTotalAmount());
-                BigDecimal scale = totalAmountC.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
-                storageQueryDTO.setNumber(scale.toString());
+                if (offset.getInventoryTotalAmount() != null) {
+                    // 数量
+                    BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
+                    BigDecimal totalAmountC = BigDecimal.valueOf(offset.getInventoryTotalAmount());
+                    BigDecimal scale = totalAmountC.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    storageQueryDTO.setNumber(scale.toString());
+                }
             }
         } else {
             // 原料编码
             storageQueryDTO.setMaterialCode(offset.getRawMaterial().getRawMaterialCode());
             if (offset.getRawMaterial() != null && rawMaterial != null) {
-                // 变化量
-                storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
+                if (offset.getTotalOffsetAmount() != null && offset.getInOutStorage() != null) {
+                    // 变化量
+                    storageQueryDTO.setChangeNumber(offset.getTotalOffsetAmount() * offset.getInOutStorage().getValue() + rawMaterial.getStandardUnit());
+                }
                 // 数量
                 storageQueryDTO.setNumber(offset.getInventoryTotalAmount() + rawMaterial.getStandardUnit());
             }
