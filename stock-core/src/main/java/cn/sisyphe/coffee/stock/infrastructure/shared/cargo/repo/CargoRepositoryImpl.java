@@ -44,7 +44,10 @@ public class CargoRepositoryImpl implements CargoRepository {
         // 货物计量
         cargo.setMeasurement(Integer.valueOf(cargoResultMap.get("number").toString()));
         // 货物规格
-        cargo.setMeasurementName(cargoResultMap.get("measurementName").toString());
+        cargo.setMeasurementName("");
+        if (cargoResultMap.get("measurementName") != null) {
+            cargo.setMeasurementName(cargoResultMap.get("measurementName").toString());
+        }
         // 货物标准单位
         cargo.setStandardUnit(cargoResultMap.get("standardUnit").toString());
         cargo.setEffectiveTime(Integer.valueOf(cargoResultMap.get("effectiveTime").toString()));
