@@ -170,18 +170,8 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * 库存查询中的历史库存有选库位
      */
     private StringBuffer queryStorageHeardHasStorageToCargo() {
-        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,storage_code,cargo_code,raw_material_code," +
-                "sum(inventory_total_amount) as total  FROM offset " +
-                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
-        return sql;
-    }
-
-    /**
-     * 库存查询中的历史库存有选库位
-     */
-    private StringBuffer queryStorageHeardHasStorageToMaterial() {
-        StringBuffer sql = new StringBuffer("SELECT  create_time,storage_code,station_code,raw_material_code," +
-                "sum(inventory_total_amount) as total  FROM offset " +
+        StringBuffer sql = new StringBuffer("SELECT create_time,station_code,storage_code,cargo_code,raw_material_code," +
+                "sum(inventory_total_amount) as total FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
         return sql;
     }
@@ -190,8 +180,18 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * 库存查询中的历史库存没有选库位
      */
     private StringBuffer queryStorageHeardNoStorageToCargo() {
-        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,cargo_code,raw_material_code," +
-                "sum(inventory_total_amount) as total  FROM offset " +
+        StringBuffer sql = new StringBuffer("SELECT create_time,station_code,cargo_code,raw_material_code," +
+                "sum(inventory_total_amount) as total FROM offset " +
+                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+        return sql;
+    }
+
+    /**
+     * 库存查询中的历史库存有选库位
+     */
+    private StringBuffer queryStorageHeardHasStorageToMaterial() {
+        StringBuffer sql = new StringBuffer("SELECT create_time,storage_code,station_code,raw_material_code," +
+                "sum(inventory_total_amount) as total FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
         return sql;
     }
@@ -200,8 +200,8 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * 库存查询中的历史库存没有选库位
      */
     private StringBuffer queryStorageHeardNoStorageToMaterial() {
-        StringBuffer sql = new StringBuffer("SELECT  create_time,station_code,raw_material_code," +
-                "sum(inventory_total_amount) as total  FROM offset " +
+        StringBuffer sql = new StringBuffer("SELECT create_time,station_code,raw_material_code," +
+                "sum(inventory_total_amount) as total FROM offset " +
                 "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
         return sql;
     }
