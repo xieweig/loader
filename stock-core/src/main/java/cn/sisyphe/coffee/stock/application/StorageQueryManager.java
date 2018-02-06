@@ -233,8 +233,7 @@ public class StorageQueryManager {
                     BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
                     BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
                     // 变化量
-                    storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + cargo.getMeasurementName());
-
+                    storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+"");
                 }
 
                 if (offset.getInventoryTotalAmount() != null) {
