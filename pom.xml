@@ -75,6 +75,13 @@
             <version>1.0</version>
         </dependency>
         <!-- auth end -->
+        <!-- cache start -->
+        <dependency>
+            <groupId>cn.sisyphe.framework</groupId>
+            <artifactId>framework-cache-redis</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- cache end -->
     </dependencies>
 
     <dependencyManagement>

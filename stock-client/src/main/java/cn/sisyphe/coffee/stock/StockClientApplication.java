@@ -16,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableEurekaClient
 @EnableFeignClients
+//@EnableScopeAuth
 public class StockClientApplication {
 
     public static void main(String[] args) {

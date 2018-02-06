@@ -118,7 +118,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         StringBuffer sql = new StringBuffer("SELECT station_code,storage_code,raw_material_code,cargo_code," +
                 "inventory_total_amount,total_offset_amount,source_code,in_out_storage,create_time," +
                 "source_bill_type,in_station_code,in_storage_code,out_station_code,out_storage_code FROM offset " +
-                "WHERE offset_id IN (SELECT max(offset_id) FROM offset WHERE 1 = 1 ");
+                "WHERE offset_id IN (SELECT offset_id FROM offset WHERE 1 = 1 ");
         return sql;
     }
 
