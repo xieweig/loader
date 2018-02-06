@@ -3,6 +3,7 @@ package cn.sisyphe.coffee.stock.controller;
 import cn.sisyphe.coffee.stock.application.StorageQueryManager;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import cn.sisyphe.coffee.stock.viewmodel.StorageDTO;
+import cn.sisyphe.framework.auth.logic.annotation.ScopeAuth;
 import cn.sisyphe.framework.web.ResponseResult;
 import cn.sisyphe.framework.web.exception.DataException;
 import io.swagger.annotations.Api;
@@ -34,7 +35,7 @@ public class StorageQueryController {
      * @return
      */
     @ApiOperation(value = "查询最新库存信息")
-//    @ScopeAuth(scope = "#conditionQuery.stationCodeArray", token = "userCode")
+    @ScopeAuth(scope = "#conditionQuery.stationCodeArray", token = "userCode")
     @RequestMapping(path = "/findNowByCondition", method = RequestMethod.POST)
     public ResponseResult findNowByCondition(@RequestBody ConditionQueryStorage conditionQuery) {
         ResponseResult responseResult = new ResponseResult();
@@ -54,7 +55,7 @@ public class StorageQueryController {
      * @return
      */
     @ApiOperation(value = "查询历史库存信息")
-//    @ScopeAuth(scope = "#conditionQuery.stationCodeArray", token = "userCode")
+    @ScopeAuth(scope = "#conditionQuery.stationCodeArray", token = "userCode")
     @RequestMapping(path = "/findOldByCondition", method = RequestMethod.POST)
     public ResponseResult findOldByCondition(@RequestBody ConditionQueryStorage conditionQuery) {
         ResponseResult responseResult = new ResponseResult();
