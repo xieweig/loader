@@ -272,7 +272,7 @@ public class StorageQueryManager {
             String stationName = findStationName(outStation.getStationCode());
             storageQueryDTO.setOutStationName(stationName);
             // 出库库房
-            storageQueryDTO.setOutStationName(outStation.getStorageCode());
+            storageQueryDTO.setOutStorageCode(outStation.getStorageCode());
         }
         Station inStation = offset.getInStation();
         if (inStation != null) {
@@ -280,7 +280,7 @@ public class StorageQueryManager {
             String stationName = findStationName(inStation.getStationCode());
             storageQueryDTO.setInStationName(stationName);
             // 入库库房
-            storageQueryDTO.setInStorageName(inStation.getStorageCode());
+            storageQueryDTO.setInStorageCode(inStation.getStorageCode());
         }
         return storageQueryDTO;
     }

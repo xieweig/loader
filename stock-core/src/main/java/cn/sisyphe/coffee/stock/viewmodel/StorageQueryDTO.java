@@ -89,7 +89,7 @@ public class StorageQueryDTO {
     /**
      * 入库库位
      */
-    private String inStorageName;
+    private String inStorageCode;
 
 
     public Date getStopTime() {
@@ -212,12 +212,12 @@ public class StorageQueryDTO {
         this.inStationName = inStationName;
     }
 
-    public String getInStorageName() {
-        return inStorageName;
+    public String getInStorageCode() {
+        return inStorageCode;
     }
 
-    public void setInStorageName(String inStorageName) {
-        this.inStorageName = inStorageName;
+    public void setInStorageCode(String inStorageCode) {
+        this.inStorageCode = inStorageCode;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class StorageQueryDTO {
                 ", outStationName='" + outStationName + '\'' +
                 ", outStorageCode='" + outStorageCode + '\'' +
                 ", inStationName='" + inStationName + '\'' +
-                ", inStorageName='" + inStorageName + '\'' +
+                ", inStorageCode='" + inStorageCode + '\'' +
                 '}';
     }
 }
