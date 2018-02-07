@@ -138,7 +138,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         StringBuffer foot = queryOffsetFoot(stringBuffer, conditionQuery);
         // 加上分页
         String pageSql = withPage(foot, conditionQuery);
-        System.err.println("历史库存查询-拼接后的sql:" + pageSql);
+//        System.err.println("历史库存查询-拼接后的sql:" + pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -167,7 +167,32 @@ public class OffsetRepositoryImpl implements OffsetRepository {
 
 
     /**
-     * 库存查询中的历史库存有选库位
+     * code is far away from bug with the animal protecting
+     * ┏┓　　　┏┓
+     * ┏┛┻━━━┛┻┓
+     * ┃　　　　　　　┃
+     * ┃　　　━　　　┃
+     * ┃　┳┛　┗┳　┃
+     * ┃　　　　　　　┃
+     * ┃　　　┻　　　┃
+     * ┃　　　　　　　┃
+     * ┗━┓　　　┏━┛
+     * 　　┃　　　┃神兽保佑
+     * 　　┃　　　┃代码无BUG！
+     * 　　┃　　　┗━━━┓
+     * 　　┃　　　　　　　┣┓
+     * 　　┃　　　　　　　┏┛
+     * 　　┗┓┓┏━┳┓┏┛
+     * 　　　┃┫┫　┃┫┫
+     * 　　　┗┻┛　┗┻┛
+     *
+     *
+     * @Description : 库存查询中的历史库存有选库位
+     * ---------------------------------
+     * @Author : XiongJing
+     * @Date 2018/2/7 11:25
+     * @param
+     * @return
      */
     private StringBuffer queryStorageHeardHasStorageToCargo() {
         StringBuffer sql = new StringBuffer("SELECT create_time,station_code,storage_code,cargo_code,raw_material_code," +
@@ -216,21 +241,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
     @Override
     public List<Offset> findByConditionToStorage(ConditionQueryStorage conditionQuery) {
         StringBuffer sql;
-        if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
-            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
-                sql = queryStorageHeardHasStorageToCargo();
-                // 拼接查询头
-            } else {
-                sql = queryStorageHeardHasStorageToMaterial();
-            }
-        } else {
-            if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
-                sql = queryStorageHeardNoStorageToCargo();
-                // 拼接查询头
-            } else {
-                sql = queryStorageHeardNoStorageToMaterial();
-            }
-        }
+        sql = getStringBuffer(conditionQuery);
 
         // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
@@ -238,7 +249,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         StringBuffer foot = queryStorageFoot(stringBuffer, conditionQuery);
         // 加上分页
         String pageSql = withPage(foot, conditionQuery);
-        System.err.println("供实时库存调用-拼接后的sql:" + pageSql);
+//        System.err.println("供实时库存调用-拼接后的sql:" + pageSql);
         Query query = entityManager.createNativeQuery(pageSql);
         query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List queryResultList = query.getResultList();
@@ -246,14 +257,12 @@ public class OffsetRepositoryImpl implements OffsetRepository {
     }
 
     /**
-     * 供实时库存查询调用查询总数
+     * 根据库房和查询类型来组装查询头
      *
      * @param conditionQuery
      * @return
      */
-    @Override
-    public Long findTotalByConditionToStorage(ConditionQueryStorage conditionQuery) {
-        // 拼接查询头
+    private StringBuffer getStringBuffer(ConditionQueryStorage conditionQuery) {
         StringBuffer sql;
         if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
             if ("cargo".equals(conditionQuery.getCargoOrMaterial())) {
@@ -270,6 +279,20 @@ public class OffsetRepositoryImpl implements OffsetRepository {
                 sql = queryStorageHeardNoStorageToMaterial();
             }
         }
+        return sql;
+    }
+
+    /**
+     * 供实时库存查询调用查询总数
+     *
+     * @param conditionQuery
+     * @return
+     */
+    @Override
+    public Long findTotalByConditionToStorage(ConditionQueryStorage conditionQuery) {
+        // 拼接查询头
+        StringBuffer sql;
+        sql = getStringBuffer(conditionQuery);
         // 拼接查询条件
         StringBuffer stringBuffer = addParameters(sql, conditionQuery);
         // 拼接查询脚
@@ -334,6 +357,24 @@ public class OffsetRepositoryImpl implements OffsetRepository {
             sql.append(substring);
             sql.append(")");
         }
+        // 拼接货物编码
+        if (!StringUtil.isEmpty(conditionQuery.getCargoCode())) {
+            sql.append(" and cargo_code like '");
+            sql.append(conditionQuery.getCargoCode() + "'");
+        }
+        // 拼接多个货物名称
+        if (conditionQuery.getCargoCodeArray() != null && conditionQuery.getCargoCodeArray().size() > 0) {
+            sql.append(" and cargo_code in ( ");
+            StringBuffer sb = new StringBuffer();
+            for (String code : conditionQuery.getCargoCodeArray()) {
+                sb.append("'");
+                sb.append(code);
+                sb.append("',");
+            }
+            String substring = sb.substring(0, sb.length() - 1);
+            sql.append(substring);
+            sql.append(")");
+        }
         // 拼接站点
         if (conditionQuery.getStationCodeArray() != null && conditionQuery.getStationCodeArray().size() > 0) {
             sql.append(" and station_code in ( ");
@@ -372,7 +413,8 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      */
     private StringBuffer queryOffsetFoot(StringBuffer sql, ConditionQueryStorage conditionQuery) {
         String cargoOrMaterial = conditionQuery.getCargoOrMaterial();
-        if (cargoOrMaterial != null && conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
+        if (cargoOrMaterial != null && conditionQuery.getStorageCodeArray() != null
+                && conditionQuery.getStorageCodeArray().size() > 0) {
             sql.append(" GROUP BY station_code,storage_code,");
         } else {
             sql.append(" GROUP BY station_code,");
@@ -392,15 +434,19 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         String cargoOrMaterial = conditionQuery.getCargoOrMaterial();
         if ("cargo".equals(cargoOrMaterial)) {
             if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
-                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,storage_code,cargo_code,raw_material_code ");
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) " +
+                        "GROUP BY  create_time,station_code,storage_code,cargo_code,raw_material_code ");
             } else {
-                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,cargo_code,raw_material_code ");
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) " +
+                        "GROUP BY  create_time,station_code,cargo_code,raw_material_code ");
             }
         } else {
             if (conditionQuery.getStorageCodeArray() != null && conditionQuery.getStorageCodeArray().size() > 0) {
-                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,storage_code,raw_material_code ");
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) " +
+                        "GROUP BY  create_time,station_code,storage_code,raw_material_code ");
             } else {
-                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) GROUP BY  create_time,station_code,raw_material_code ");
+                sql.append(" GROUP BY station_code,storage_code, raw_material_code,cargo_code) " +
+                        "GROUP BY  create_time,station_code,raw_material_code ");
             }
         }
         return sql;
