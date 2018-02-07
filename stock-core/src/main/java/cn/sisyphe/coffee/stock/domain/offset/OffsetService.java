@@ -17,6 +17,7 @@ import cn.sisyphe.framework.web.exception.DataException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by heyong on 2018/1/5 9:53
@@ -96,6 +97,11 @@ public class OffsetService {
      * @return
      */
     private int getInventoryAmount(Cargo cargo, Station station) {
+
+        if(station == null || StringUtils.isEmpty(station.getStationCode()) || StringUtils.isEmpty(station.getStorageCode())
+                || cargo == null || StringUtils.isEmpty(cargo.getCargoCode())){
+            return 0;
+        }
 
         return offsetDataPersistence.getOffsetRepository().getStockByStationAndCargo(station, cargo);
     }
