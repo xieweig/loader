@@ -45,6 +45,12 @@ public enum BillTypeEnum {
      */
     MISTAKE,
 
+    OVERFLOW_MISTAKE,
+
+    LOST_MISTAKE,
+
+    DAILY_MISTAKE,
+
     /**
      * 其它出入库
      */
