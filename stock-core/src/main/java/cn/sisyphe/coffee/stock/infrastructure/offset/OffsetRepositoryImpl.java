@@ -186,13 +186,12 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * 　　　┃┫┫　┃┫┫
      * 　　　┗┻┛　┗┻┛
      *
-     *
+     * @param
+     * @return
      * @Description : 库存查询中的历史库存有选库位
      * ---------------------------------
      * @Author : XiongJing
      * @Date 2018/2/7 11:25
-     * @param
-     * @return
      */
     private StringBuffer queryStorageHeardHasStorageToCargo() {
         StringBuffer sql = new StringBuffer("SELECT create_time,station_code,storage_code,cargo_code,raw_material_code," +

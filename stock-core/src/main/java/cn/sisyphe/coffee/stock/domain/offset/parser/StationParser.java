@@ -25,6 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum.DAILY_MISTAKE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum.LOST_MISTAKE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum.OVERFLOW_MISTAKE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum.valueOf;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.IN_STORAGE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.MOVE_STORAGE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.OUT_STORAGE;
 import static java.util.Arrays.asList;
 
 /**
@@ -37,6 +44,8 @@ import static java.util.Arrays.asList;
 public class StationParser implements BillParser {
 
     private static final List<String> BILL_PURPOSE = asList("IN_STORAGE", "OUT_STORAGE", "MOVE_STORAGE");
+
+    private static final List<BillTypeEnum> MISTAKE_BILL_TYPE = asList(OVERFLOW_MISTAKE, LOST_MISTAKE, DAILY_MISTAKE);
 
     /**
      * 冲减服务
@@ -126,7 +135,7 @@ public class StationParser implements BillParser {
         pendingBillItem.setInStation(convertLocation((JSONObject) properties.get("inLocation")));
         pendingBillItem.setOutStation(convertLocation((JSONObject) properties.get("outLocation")));
         pendingBillItem.setItemCode((String) properties.get("billCode"));
-        pendingBillItem.setSourceBillType(BillTypeEnum.valueOf((String) properties.get("billType")));
+        pendingBillItem.setSourceBillType(mapBillType((String) properties.get("billType"), pendingBillItem.getInOutStorage()));
         List<PendingBillDetail> pendingBillDetails = new ArrayList<>();
         for (JSONObject billDetail : billDetails) {
             PendingBillDetail pendingBillDetail = new PendingBillDetail();
@@ -142,6 +151,21 @@ public class StationParser implements BillParser {
         return pendingBillItem;
     }
 
+    private BillTypeEnum mapBillType(String billType, InOutStorage inOutStorage) {
+        if ("MISTAKE".equals(billType)) {
+            if (IN_STORAGE.equals(inOutStorage)) {
+                return OVERFLOW_MISTAKE;
+            }
+            if (OUT_STORAGE.equals(inOutStorage)) {
+                return LOST_MISTAKE;
+            }
+            if (MOVE_STORAGE.equals(inOutStorage)) {
+                return DAILY_MISTAKE;
+            }
+        }
+        return valueOf(billType);
+    }
+
     private String mapSourceCode(Map<String, Object> properties) {
         if (properties.containsKey("sourceCode")) {
             return (String) properties.get("sourceCode");
@@ -150,6 +174,9 @@ public class StationParser implements BillParser {
     }
 
     private Station convertLocation(JSONObject jsonObject) {
+        if (jsonObject == null) {
+            return null;
+        }
         Station station = new Station();
         if (jsonObject.containsKey("stationCode")) {
             station.setStationCode(jsonObject.getString("stationCode"));
@@ -205,9 +232,9 @@ public class StationParser implements BillParser {
 
     private AbstractMessagePurposeStrategy getMessageStrategy(InOutStorage inOutStorage) {
         return new Switcher<AbstractMessagePurposeStrategy>()
-                .addCase(InOutStorage.IN_STORAGE, new InStockPurposeStrategyImpl())
-                .addCase(InOutStorage.MOVE_STORAGE, new MoveStockPurposeStrategyImpl())
-                .addCase(InOutStorage.OUT_STORAGE, new OutStockPurposeStrategyImpl())
+                .addCase(IN_STORAGE, new InStockPurposeStrategyImpl())
+                .addCase(MOVE_STORAGE, new MoveStockPurposeStrategyImpl())
+                .addCase(OUT_STORAGE, new OutStockPurposeStrategyImpl())
                 .exec(inOutStorage);
     }
 }
