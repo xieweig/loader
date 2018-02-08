@@ -751,6 +751,70 @@ public class PendingTest {
 
 
     /**
+     * 报溢出库
+     */
+    @Test
+    public void inTest1() {
+        PendingBill pendingBill = new PendingBill();
+        // 单号
+        pendingBill.setBillCode("inBillCode002");
+
+
+        // 待冲减的项
+        List<PendingBillItem> billItemList = new ArrayList<>();
+        PendingBillItem pendingBillItem = new PendingBillItem();
+        // 项目号
+        pendingBillItem.setItemCode(pendingBill.getBillCode());
+
+        // 调入站点
+        Station inStation = new Station();
+        inStation.setStationCode("HDQA04");
+        inStation.setStorageCode("ST0002");
+        pendingBillItem.setInStation(inStation);
+
+        // 进出库类型
+        pendingBillItem.setInOutStorage(InOutStorage.IN_STORAGE);
+
+
+
+        // 待处理单明细
+        List<PendingBillDetail> billDetailList = new ArrayList<>();
+        // ====================待处理单明细1==========================
+        PendingBillDetail pendingBillDetail = new PendingBillDetail();
+        // 原料
+        RawMaterial rawMaterial = new RawMaterial();
+        rawMaterial.setRawMaterialCode("rawMaterial001");
+        pendingBillDetail.setRawMaterial(rawMaterial);
+
+        // 实拣总量
+        pendingBillDetail.setActualTotalAmount(80);
+
+
+        billDetailList.add(pendingBillDetail);
+
+        // ====================待处理单明细2==========================
+        PendingBillDetail pendingBillDetail2 = new PendingBillDetail();
+        // 原料
+        RawMaterial rawMaterial2 = new RawMaterial();
+        rawMaterial2.setRawMaterialCode("rawMaterial002");
+        pendingBillDetail2.setRawMaterial(rawMaterial2);
+
+
+        // 实拣总量
+        pendingBillDetail2.setActualTotalAmount(1220);
+
+
+        billDetailList.add(pendingBillDetail2);
+
+        pendingBillItem.setPendingBillDetailList(billDetailList);
+        billItemList.add(pendingBillItem);
+        // ========================================================
+
+
+        pendingBill.setPendingBillItemList(billItemList);
+        pendingRepository.save(pendingBill);
+    }
+    /**
      * 查询单个
      */
     @Test

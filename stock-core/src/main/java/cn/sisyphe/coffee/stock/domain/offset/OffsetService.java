@@ -186,6 +186,10 @@ public class OffsetService {
         // 无来源入库 查询最近未冲减的资料
         if (detail.getCargo() == null || detail.getUnitCost() == null || detail.getExpirationTime() == null) {
             setRecentlyCargoInfo(detail, station);
+
+            if (detail.getCargo() == null){
+                throw new DataException("005", "此站点没有此原料的进货史，不能冲减");
+            }
         }
 
         offset.setBatchCode(pendingBill.getBillCode());
@@ -237,7 +241,7 @@ public class OffsetService {
             return;
         }
 
-        if (detail.getCargo() == null) {
+        if (detail.getCargo() == null || StringUtils.isEmpty(detail.getCargo().getCargoCode())) {
             detail.setCargo(offsetting.getCargo());
         }
 

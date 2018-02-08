@@ -54,10 +54,10 @@ public interface JPAOffsetRepository extends JpaRepository<Offset, Long>, JpaSpe
 
     /**
      * 按原料的查询
-     * @param station
+     * @param stationCode
      * @param rawMaterial
      * @param surplusAmount
      * @return
      */
-    Offset findFirstByStationAndRawMaterialAndSurplusAmountNotOrderByCreateTime(Station station, RawMaterial rawMaterial, Integer surplusAmount);
+    Offset findFirstByStation_StationCodeAndRawMaterialAndSurplusAmountNotOrderByCreateTime(String stationCode, RawMaterial rawMaterial, Integer surplusAmount);
 }

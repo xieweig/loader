@@ -90,7 +90,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         }
 
         if (offset == null) {
-            offset = jpaOffsetRepository.findFirstByStationAndRawMaterialAndSurplusAmountNotOrderByCreateTime(station, rawMaterial, 0);
+            offset = jpaOffsetRepository.findFirstByStation_StationCodeAndRawMaterialAndSurplusAmountNotOrderByCreateTime(station.getStationCode(), rawMaterial, 0);
         }
 
         return offset;

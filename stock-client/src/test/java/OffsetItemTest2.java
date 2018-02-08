@@ -187,6 +187,18 @@ public class OffsetItemTest2 {
         offsetService.offset(new ResponseResult());
     }
 
+    /**
+     * 报溢入库
+     */
+    @Test
+    public void offsetTest11() {
+        String pendCode = "inBillCode002";
+        PendingBill pendingBill = pendingRepository.findByCode(pendCode);
+        OffsetService offsetService = new OffsetService(new StationParser(), offsetDataPersistence);
+        offsetService.setPendingBill(pendingBill);
+
+        offsetService.offset(new ResponseResult());
+    }
 
     @Autowired
     private JPAPendingRepository jpaPendingRepository;
