@@ -226,6 +226,9 @@ public class StationParser implements BillParser {
             return;
         }
         pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));
+        if (((Integer) billDetail.get("shippedAmount")) == 0) {
+            pendingBillDetail.setShipTotalAmount(billDetail.getInteger("actualTotalAmount"));
+        }
 
 
     }
