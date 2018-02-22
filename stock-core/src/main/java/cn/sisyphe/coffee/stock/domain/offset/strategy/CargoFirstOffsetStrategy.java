@@ -38,11 +38,11 @@ public class CargoFirstOffsetStrategy implements OffsetStrategy {
     public Offset getOffsetting(Station station, RawMaterial rawMaterial, Cargo cargo) {
 
         if (station == null || StringUtils.isEmpty(station.getStationCode()) || StringUtils.isEmpty(station.getStorageCode())) {
-            throw new DataException("", "站点/库位信息为空");
+            throw new DataException("200010", "站点/库位信息为空");
         }
 
         if (rawMaterial == null || StringUtils.isEmpty(rawMaterial.getRawMaterialCode())) {
-            throw new DataException("", "原料信息为空");
+            throw new DataException("200011", "原料信息为空");
         }
 
         //查找货物

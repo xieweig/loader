@@ -47,7 +47,7 @@ public class StorageServiceImpl implements StorageService {
         if (station == null || StringUtils.isEmpty(station.getStationCode())
                 || StringUtils.isEmpty(station.getStorageCode())
                 || cargo == null || StringUtils.isEmpty(cargo.getCargoCode())) {
-            throw new DataException("001", "库存更新失败");
+            throw new DataException("200016", "库存更新失败");
         }
 
         StorageInventory storageInventory = storageInventoryRepository.findByStationAndCargo(station, cargo);

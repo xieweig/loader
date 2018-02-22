@@ -65,7 +65,7 @@ public class MoveStockService implements StockService {
                 StringUtils.isEmpty(pendingBillItem.getInStation().getStationCode()) ||
                 StringUtils.isEmpty(pendingBillItem.getInStation().getStorageCode())) {
 
-            throw new DataException("004", "参数不完整", null, pendingBillItem);
+            throw new DataException("200000", "参数不完整", null, pendingBillItem);
         }
     }
 
@@ -77,9 +77,9 @@ public class MoveStockService implements StockService {
     private void offsetDetail(PendingBillDetail detail) {
 
         if (detail.getActualTotalAmount() == null || detail.getShipTotalAmount() == null) {
-            throw new DataException("004", "没有应拣/实拣数量");
+            throw new DataException("200001", "没有应拣/实拣数量");
         } else if (detail.getRawMaterial() == null || StringUtils.isEmpty(detail.getRawMaterial().getRawMaterialCode())) {
-            throw new DataException("004", "原料信息不完整");
+            throw new DataException("200002", "原料信息不完整");
         }
 
 
@@ -109,7 +109,7 @@ public class MoveStockService implements StockService {
 
         if (offsetting == null || offsetting.getSurplusAmount() <= 0) {
             // 没有可冲减的物品
-            throw new DataException("001", "没有可冲减的物品");
+            throw new DataException("200003", "没有可冲减的物品");
         }
 
         // 应拣数量
@@ -151,7 +151,7 @@ public class MoveStockService implements StockService {
 
         if (offsetting == null || offsetting.getSurplusAmount() <= 0) {
             // 没有可冲减的物品
-            throw new DataException("001", "没有可冲减的物品");
+            throw new DataException("200004", "没有可冲减的物品");
         }
 
         // 应拣数量

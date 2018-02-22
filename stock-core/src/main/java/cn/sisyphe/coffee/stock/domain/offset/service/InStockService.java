@@ -66,7 +66,7 @@ public class InStockService implements StockService {
                 StringUtils.isEmpty(pendingBillItem.getInStation().getStationCode()) ||
                 StringUtils.isEmpty(pendingBillItem.getInStation().getStorageCode())) {
 
-            throw new DataException("004", "参数不完整", null, pendingBillItem);
+            throw new DataException("200007", "参数不完整", null, pendingBillItem);
         }
     }
 
@@ -84,9 +84,9 @@ public class InStockService implements StockService {
             if (detail.getOffset() != null && detail.getOffset()) {
                 continue;
             } else if (detail.getActualTotalAmount() == null) {
-                throw new DataException("004", "没有实拣数量");
+                throw new DataException("200008", "没有实拣数量");
             } else if (detail.getRawMaterial() == null || StringUtils.isEmpty(detail.getRawMaterial().getRawMaterialCode())) {
-                throw new DataException("004", "原料信息不完整");
+                throw new DataException("200009", "原料信息不完整");
             }
 
             // 入库

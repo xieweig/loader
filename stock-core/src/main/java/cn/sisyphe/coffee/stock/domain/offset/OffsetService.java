@@ -273,7 +273,7 @@ public class OffsetService {
                 stockService = new MoveStockService(this, pendingBillItem);
                 break;
             default:
-                throw new DataException("002", "冲减初始化失败");
+                throw new DataException("200005", "冲减初始化失败");
         }
 
 

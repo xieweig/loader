@@ -70,7 +70,7 @@ public class SaleParser implements BillParser {
         Map<String, Object> resultMap = responseResult.getResult();
         if (!resultMap.containsKey("bill")) {
             // TODO: 2018/1/23 MQ中单据解析
-            throw new DataException("500", "没有包含单据信息");
+            throw new DataException("200006", "没有包含单据信息");
         }
         // 解析MQ中的数据源
         LinkedHashMap resultLinked = (LinkedHashMap) resultMap;

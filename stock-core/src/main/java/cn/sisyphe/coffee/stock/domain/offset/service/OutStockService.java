@@ -62,7 +62,7 @@ public class OutStockService implements StockService {
                 StringUtils.isEmpty(pendingBillItem.getOutStation().getStationCode()) ||
                 StringUtils.isEmpty(pendingBillItem.getOutStation().getStorageCode())) {
 
-            throw new DataException("004", "参数不完整", null, pendingBillItem);
+            throw new DataException("200012", "参数不完整", null, pendingBillItem);
         }
     }
 
@@ -75,7 +75,7 @@ public class OutStockService implements StockService {
     private void offsetDetail(PendingBillDetail detail) {
 
         if (detail.getActualTotalAmount() == null) {
-            throw new DataException("004", "没有实拣数量");
+            throw new DataException("200013", "没有实拣数量");
         }
 
         // 获取可冲减的货物
@@ -83,9 +83,9 @@ public class OutStockService implements StockService {
 
         if (offsetting == null || offsetting.getSurplusAmount() <= 0) {
             // 没有可冲减的物品
-            throw new DataException("001", "没有可冲减的物品", null, pendingBillItem, detail);
+            throw new DataException("200014", "没有可冲减的物品", null, pendingBillItem, detail);
         } else if (detail.getRawMaterial() == null || StringUtils.isEmpty(detail.getRawMaterial().getRawMaterialCode())) {
-            throw new DataException("004", "原料信息不完整");
+            throw new DataException("200015", "原料信息不完整");
         }
 
 
