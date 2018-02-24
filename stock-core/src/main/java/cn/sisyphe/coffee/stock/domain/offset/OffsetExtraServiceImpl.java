@@ -42,4 +42,9 @@ public class OffsetExtraServiceImpl implements OffsetExtraService {
         return offsetRepository.findTotalByConditionToStorage(conditionQuery);
     }
 
+    @Override
+    public Offset findRawMaterialStock(String stationCode, String rawMaterialCode, String storageCode) {
+        return offsetRepository.findRawMaterialStock(stationCode, rawMaterialCode, storageCode);
+    }
+
 }

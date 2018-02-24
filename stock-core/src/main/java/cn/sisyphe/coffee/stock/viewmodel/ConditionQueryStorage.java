@@ -77,6 +77,12 @@ public class ConditionQueryStorage implements Serializable {
     private List<String> materialCodes;
 
     /**
+     * Created by Amy on 2017/12/12 19:11
+     * describe 导出excel的唯一标识
+     */
+    private String excelUniqueIdentification;
+
+    /**
      * 页码
      */
     private int page;
@@ -190,6 +196,14 @@ public class ConditionQueryStorage implements Serializable {
         this.cargoOrMaterial = cargoOrMaterial;
     }
 
+    public String getExcelUniqueIdentification() {
+        return excelUniqueIdentification;
+    }
+
+    public void setExcelUniqueIdentification(String excelUniqueIdentification) {
+        this.excelUniqueIdentification = excelUniqueIdentification;
+    }
+
     @Override
     public String toString() {
         return "ConditionQueryStorage{" +
@@ -204,6 +218,7 @@ public class ConditionQueryStorage implements Serializable {
                 ", materialCodeArray=" + materialCodeArray +
                 ", materialTypeArray=" + materialTypeArray +
                 ", materialCodes=" + materialCodes +
+                ", excelUniqueIdentification='" + excelUniqueIdentification + '\'' +
                 ", page=" + page +
                 ", pageSize=" + pageSize +
                 '}';

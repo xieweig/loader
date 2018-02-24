@@ -302,6 +302,19 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         return new Long(offsetMapper(queryResultList, false).size());
     }
 
+    /**
+     * 查询原料在某个站点某个库位下的最新库存信息
+     *
+     * @param stationCode     站点编码
+     * @param rawMaterialCode 原料编码
+     * @param storageCode     库位编码
+     * @return
+     */
+    @Override
+    public Offset findRawMaterialStock(String stationCode, String rawMaterialCode, String storageCode) {
+        return jpaOffsetRepository.findRawMaterialStock(stationCode, rawMaterialCode, storageCode);
+    }
+
 
     /**
      * 拼接参数

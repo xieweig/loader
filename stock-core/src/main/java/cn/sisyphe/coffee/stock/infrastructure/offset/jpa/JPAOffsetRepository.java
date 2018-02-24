@@ -60,4 +60,16 @@ public interface JPAOffsetRepository extends JpaRepository<Offset, Long>, JpaSpe
      * @return
      */
     Offset findFirstByStation_StationCodeAndRawMaterialAndSurplusAmountNotOrderByCreateTime(String stationCode, RawMaterial rawMaterial, Integer surplusAmount);
+
+
+    /**
+     * 查询原料在某个站点某个库位下的最新库存信息
+     *
+     * @param stationCode     站点编码
+     * @param rawMaterialCode 原料编码
+     * @param storageCode     库位编码
+     * @return
+     */
+    @Query(value = "select * from offset where offset_id = (select max(offset_id) from offset where station_code = ?1 and raw_material_code = ?2 and storage_code = ?3)",nativeQuery = true)
+    Offset findRawMaterialStock(String stationCode, String rawMaterialCode, String storageCode);
 }

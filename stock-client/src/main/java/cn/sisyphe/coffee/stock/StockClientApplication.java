@@ -1,6 +1,5 @@
 package cn.sisyphe.coffee.stock;
 
-import cn.sisyphe.framework.auth.logic.annotation.EnableScopeAuth;
 import cn.sisyphe.framework.message.core.annotation.EnableS2Messaging;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableEurekaClient
 @EnableFeignClients
-@EnableScopeAuth
+//@EnableScopeAuth
 @EnableS2Messaging
 public class StockClientApplication {
 

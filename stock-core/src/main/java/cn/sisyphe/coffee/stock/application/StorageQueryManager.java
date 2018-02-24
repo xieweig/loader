@@ -14,6 +14,7 @@ import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import cn.sisyphe.coffee.stock.viewmodel.StorageDTO;
 import cn.sisyphe.coffee.stock.viewmodel.StorageQueryDTO;
 import cn.sisyphe.framework.common.utils.StringUtil;
+import cn.sisyphe.framework.web.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -233,7 +234,7 @@ public class StorageQueryManager {
                     BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
                     BigDecimal number = totalOffsetAmountA.divide(measurementB).setScale(2, BigDecimal.ROUND_HALF_UP);
                     // 变化量
-                    storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue()))+"");
+                    storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + "");
                 }
 
                 if (offset.getInventoryTotalAmount() != null) {
@@ -312,5 +313,27 @@ public class StorageQueryManager {
      */
     private RawMaterial findRawMaterial(String materialCode) {
         return materialService.findByMaterialCode(materialCode);
+    }
+
+
+    /**
+     * 查询原料在某个站点某个库位下的最新库存信息
+     *
+     * @param stationCode     站点编码
+     * @param rawMaterialCode 原料编码
+     * @param storageCode     库位编码
+     * @return
+     */
+    public Offset findRawMaterialStock(String stationCode, String rawMaterialCode, String storageCode) {
+        if (StringUtil.isEmpty(stationCode)) {
+            throw new DataException("200017", "站点编码不能为空");
+        }
+        if (StringUtil.isEmpty(rawMaterialCode)) {
+            throw new DataException("200018", "原料编码不能为空");
+        }
+        if (StringUtil.isEmpty(storageCode)) {
+            throw new DataException("200019", "库位编码不能为空");
+        }
+        return offsetExtraService.findRawMaterialStock(stationCode, rawMaterialCode, storageCode);
     }
 }

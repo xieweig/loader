@@ -12,47 +12,56 @@ public enum BillTypeEnum {
      */
     NO_PLAN,
     /**
-     * 计划
+     * 计划单
      */
     PLAN,
     /**
-     * 进货
+     * 进货单
      */
     PURCHASE,
     /**
-     * 配送
+     * 配送单
      */
     DELIVERY,
     /**
-     * 调剂
+     * 调剂单
      */
     ADJUST,
     /**
-     * 退库
+     * 退库单
      */
     RESTOCK,
     /**
-     * 退货
+     * 退货单
      */
     RETURNED,
 
     /**
-     * 调拨
+     * 调拨单
      */
     ALLOT,
     /**
-     * 流转误差
+     * 流转误差单
      */
     MISTAKE,
 
+    /**
+     * 报溢单
+     */
     OVERFLOW_MISTAKE,
 
+    /**
+     * 报损单
+     */
     LOST_MISTAKE,
 
+    /**
+     * 日常误差单
+     */
     DAILY_MISTAKE,
 
     /**
-     * 其它出入库
+     * 其它出入库单
      */
     IN_OUT_SELF;
 
