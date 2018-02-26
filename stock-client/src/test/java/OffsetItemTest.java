@@ -31,7 +31,7 @@ public class OffsetItemTest {
         offsetTest2();
         Thread.sleep(5000L);
         offsetTest3();
-        Thread.sleep(7000L);
+        Thread.sleep(2000L);
         offsetTest4();
         offsetTest5();
         Thread.sleep(2000L);

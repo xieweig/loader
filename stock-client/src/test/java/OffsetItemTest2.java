@@ -41,6 +41,7 @@ public class OffsetItemTest2 {
         offsetTest8();
         offsetTest9();
         offsetTest10();
+        offsetTest11();
     }
 
 
@@ -193,6 +194,32 @@ public class OffsetItemTest2 {
     @Test
     public void offsetTest11() {
         String pendCode = "inBillCode002";
+        PendingBill pendingBill = pendingRepository.findByCode(pendCode);
+        OffsetService offsetService = new OffsetService(new StationParser(), offsetDataPersistence);
+        offsetService.setPendingBill(pendingBill);
+
+        offsetService.offset(new ResponseResult());
+    }
+
+    /**
+     * 报溢入库
+     */
+    @Test
+    public void offsetTest12() {
+        String pendCode = "inBillCode003";
+        PendingBill pendingBill = pendingRepository.findByCode(pendCode);
+        OffsetService offsetService = new OffsetService(new StationParser(), offsetDataPersistence);
+        offsetService.setPendingBill(pendingBill);
+
+        offsetService.offset(new ResponseResult());
+    }
+
+    /**
+     * 报损出库
+     */
+    @Test
+    public void offsetTest13() {
+        String pendCode = "outBillCode002";
         PendingBill pendingBill = pendingRepository.findByCode(pendCode);
         OffsetService offsetService = new OffsetService(new StationParser(), offsetDataPersistence);
         offsetService.setPendingBill(pendingBill);

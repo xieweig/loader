@@ -82,7 +82,7 @@ public class OffsetRepositoryImpl implements OffsetRepository {
      * @return
      */
     @Override
-    public Offset findFirstRawMaterial(Station station, RawMaterial rawMaterial, Cargo cargo) {
+    public Offset findFirstCargoOrRawMaterial(Station station, RawMaterial rawMaterial, Cargo cargo) {
 
         Offset offset = null;
         if (cargo != null) {
@@ -90,7 +90,31 @@ public class OffsetRepositoryImpl implements OffsetRepository {
         }
 
         if (offset == null) {
-            offset = jpaOffsetRepository.findFirstByStation_StationCodeAndRawMaterialAndSurplusAmountNotOrderByCreateTime(station.getStationCode(), rawMaterial, 0);
+            offset = jpaOffsetRepository.findFirstByStationAndRawMaterialAndSurplusAmountNotOrderByCreateTime(station, rawMaterial, 0);
+        }
+
+        return offset;
+    }
+
+    /**
+     * 查询最近的货物或原料的进货史
+     *
+     * @param station
+     * @param rawMaterial
+     * @param cargo
+     * @return
+     */
+    @Override
+    public Offset findLastCargoOrRawMaterialHistory(Station station, RawMaterial rawMaterial, Cargo cargo) {
+
+
+        Offset offset = null;
+        if (cargo != null) {
+            offset = jpaOffsetRepository.findFirstByStation_StationCodeAndRawMaterialAndCargoAndInOutStorageOrderByCreateTimeDesc(station.getStationCode(), rawMaterial, cargo, 1);
+        }
+
+        if (offset == null) {
+            offset = jpaOffsetRepository.findFirstByStation_StationCodeAndRawMaterialAndInOutStorageOrderByCreateTimeDesc(station.getStationCode(), rawMaterial, 1);
         }
 
         return offset;

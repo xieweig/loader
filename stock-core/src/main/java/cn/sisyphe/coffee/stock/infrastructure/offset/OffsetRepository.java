@@ -43,14 +43,23 @@ public interface OffsetRepository {
     int getStockByStationAndCargo(Station station, Cargo cargo);
 
     /**
-     * 查询首个原料
+     * 查询首个货物或原料
      *
      * @param station
      * @param rawMaterial
      * @param cargo
      * @return
      */
-    Offset findFirstRawMaterial(Station station, RawMaterial rawMaterial, Cargo cargo);
+    Offset findFirstCargoOrRawMaterial(Station station, RawMaterial rawMaterial, Cargo cargo);
+
+    /**
+     * 查询最近的货物或原料的进货史
+     * @param station
+     * @param rawMaterial
+     * @param cargo
+     * @return
+     */
+    Offset findLastCargoOrRawMaterialHistory(Station station, RawMaterial rawMaterial, Cargo cargo);
 
     /**
      * 查询原出库单冲减

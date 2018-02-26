@@ -229,13 +229,13 @@ public class OffsetService {
     }
 
     /**
-     * 获取最近未冲减的物品信息
+     * 获取最近的进货史
      *
      * @param detail
      * @param station
      */
     private void setRecentlyCargoInfo(PendingBillDetail detail, Station station) {
-        Offset offsetting = billParser.getOffsetStrategy().getOffsetting(station, detail.getRawMaterial(), detail.getCargo());
+        Offset offsetting = offsetDataPersistence.getOffsetRepository().findLastCargoOrRawMaterialHistory(station, detail.getRawMaterial(), detail.getCargo());
 
         if (offsetting == null) {
             return;
@@ -280,7 +280,7 @@ public class OffsetService {
         //事务开始
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        def.setTimeout(10030);
+        def.setTimeout(60);
         TransactionStatus status = offsetDataPersistence.getTransactionManager().getTransaction(def);
 
         try {

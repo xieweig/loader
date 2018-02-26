@@ -43,7 +43,7 @@ public interface JPAOffsetRepository extends JpaRepository<Offset, Long>, JpaSpe
 
 
     /**
-     * 带货物的查询
+     * 按货物的查询未冲减的记录
      * @param station
      * @param rawMaterial
      * @param cargo
@@ -53,14 +53,31 @@ public interface JPAOffsetRepository extends JpaRepository<Offset, Long>, JpaSpe
     Offset findFirstByStationAndRawMaterialAndCargoAndSurplusAmountNotOrderByCreateTime(Station station, RawMaterial rawMaterial, Cargo cargo, Integer surplusAmount);
 
     /**
-     * 按原料的查询
-     * @param stationCode
+     * 按原料的查询未冲减的记录
+     * @param station
      * @param rawMaterial
      * @param surplusAmount
      * @return
      */
-    Offset findFirstByStation_StationCodeAndRawMaterialAndSurplusAmountNotOrderByCreateTime(String stationCode, RawMaterial rawMaterial, Integer surplusAmount);
+    Offset findFirstByStationAndRawMaterialAndSurplusAmountNotOrderByCreateTime(Station station, RawMaterial rawMaterial, Integer surplusAmount);
 
+
+    /**
+     * 按货物查询当前站点的最近的进货史
+     * @param stationCode
+     * @param rawMaterial
+     * @param cargo
+     * @return
+     */
+    Offset findFirstByStation_StationCodeAndRawMaterialAndCargoAndInOutStorageOrderByCreateTimeDesc(String stationCode, RawMaterial rawMaterial, Cargo cargo, Integer inOutStorage);
+
+    /**
+     * 按原料查询当前站点的最近的进货史
+     * @param stationCode
+     * @param rawMaterial
+     * @return
+     */
+    Offset findFirstByStation_StationCodeAndRawMaterialAndInOutStorageOrderByCreateTimeDesc(String stationCode, RawMaterial rawMaterial, Integer inOutStorage);
 
     /**
      * 查询原料在某个站点某个库位下的最新库存信息

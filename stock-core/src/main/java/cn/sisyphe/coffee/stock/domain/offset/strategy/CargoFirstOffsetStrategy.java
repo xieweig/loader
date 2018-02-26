@@ -46,7 +46,7 @@ public class CargoFirstOffsetStrategy implements OffsetStrategy {
         }
 
         //查找货物
-        return offsetService.getOffsetDataPersistence().getOffsetRepository().findFirstRawMaterial(station, rawMaterial, cargo);
+        return offsetService.getOffsetDataPersistence().getOffsetRepository().findFirstCargoOrRawMaterial(station, rawMaterial, cargo);
     }
 
 }
