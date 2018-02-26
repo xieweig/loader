@@ -169,7 +169,7 @@ public class StorageQueryManager {
             if (cargo != null) {
                 BigDecimal totalOffsetAmountA = BigDecimal.valueOf(inventory.getTotalAmount());
                 BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
-                BigDecimal number = totalOffsetAmountA.divide(measurementB,2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal number = totalOffsetAmountA.divide(measurementB, 2, BigDecimal.ROUND_HALF_UP);
                 // 数量
                 storageQueryDTO.setNumber(number.toString());
             }
@@ -232,7 +232,7 @@ public class StorageQueryManager {
                 if (offset.getTotalOffsetAmount() != null) {
                     BigDecimal totalOffsetAmountA = BigDecimal.valueOf(offset.getTotalOffsetAmount());
                     BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
-                    BigDecimal number = totalOffsetAmountA.divide(measurementB,2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal number = totalOffsetAmountA.divide(measurementB, 2, BigDecimal.ROUND_HALF_UP);
                     // 变化量
                     storageQueryDTO.setChangeNumber(number.multiply(new BigDecimal(offset.getInOutStorage().getValue())) + "");
                 }
@@ -241,7 +241,7 @@ public class StorageQueryManager {
                     // 数量
                     BigDecimal measurementB = BigDecimal.valueOf(cargo.getMeasurement());
                     BigDecimal totalAmountC = BigDecimal.valueOf(offset.getInventoryTotalAmount());
-                    BigDecimal scale = totalAmountC.divide(measurementB,2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal scale = totalAmountC.divide(measurementB, 2, BigDecimal.ROUND_HALF_UP);
                     storageQueryDTO.setNumber(scale.toString());
                 }
             }
