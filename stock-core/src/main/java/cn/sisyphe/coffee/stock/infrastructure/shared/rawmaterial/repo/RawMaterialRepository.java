@@ -1,5 +1,6 @@
 package cn.sisyphe.coffee.stock.infrastructure.shared.rawmaterial.repo;
 
+
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 
 import java.util.List;

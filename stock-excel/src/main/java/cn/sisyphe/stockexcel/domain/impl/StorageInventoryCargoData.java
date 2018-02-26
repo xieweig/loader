@@ -26,13 +26,13 @@ public class StorageInventoryCargoData extends ExcelDataQuery<StorageQueryDTO> {
 
     @Override
     public void initExcelDataQuery() {
-        StorageDTO storageDTO = storageQueryManager.findOldByCondition(condition);
+        StorageDTO storageDTO = storageQueryManager.findNowByCondition(condition);
         setTotalNum(storageDTO.getTotalNumber().intValue());
     }
 
     @Override
     public List<StorageQueryDTO> getSourcesPageData(int i, Object o) {
-        return storageQueryManager.findOldByCondition(condition).getContent();
+        return storageQueryManager.findNowByCondition(condition).getContent();
     }
 
     @Override
