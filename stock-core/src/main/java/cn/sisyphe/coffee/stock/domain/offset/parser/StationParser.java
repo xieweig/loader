@@ -144,7 +144,7 @@ public class StationParser implements BillParser {
             pendingBillDetail.setUnitCost(billDetail.getBigDecimal("unitPrice"));
             pendingBillDetail.setExpirationTime(billDetail.getDate("dateInProduced"));
             mapMaterialAndCargo(pendingBillDetail, (JSONObject) billDetail.get("goods"));
-            mapTotalAmount(billDetail, pendingBillDetail);
+            mapTotalAmount(billDetail, pendingBillDetail, pendingBillItem);
             pendingBillDetails.add(pendingBillDetail);
         }
         pendingBillItem.setPendingBillDetailList(pendingBillDetails);
@@ -212,8 +212,8 @@ public class StationParser implements BillParser {
         }
     }
 
-    private void mapTotalAmount(JSONObject billDetail, PendingBillDetail pendingBillDetail) {
-        if (pendingBillDetail.getCargo() != null) {
+    private void mapTotalAmount(JSONObject billDetail, PendingBillDetail pendingBillDetail, PendingBillItem pendingBillItem) {
+        if (pendingBillDetail.getCargo() != null && !MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
             Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
             if (cargo != null && cargo.getMeasurement() != null) {
                 Integer measurement = cargo.getMeasurement();
