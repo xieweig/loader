@@ -74,7 +74,7 @@ public class OffsetService {
 
         if (pendingBill.getOffset()) {
             // 处理完成，清除明细
-            pendingBill.getPendingBillItemList().clear();
+            //pendingBill.getPendingBillItemList().clear();
             offsetDataPersistence.getPendingRepository().save(pendingBill);
         }
     }
