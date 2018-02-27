@@ -86,7 +86,9 @@ public class MoveStockService implements StockService {
         // 可共同冲减数量
         int amount = SMath.min(detail.getShipTotalAmount(), detail.getActualTotalAmount());
 
-        inAndOutOffset(detail, amount);
+        if (amount > 0) {
+            inAndOutOffset(detail, amount);
+        }
 
         if (detail.getActualTotalAmount() > 0) {
             // 实拣多 调入多

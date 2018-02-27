@@ -84,6 +84,7 @@ public class PendingBillItem extends BaseEntity {
     /**
      * 来源单据的类型
      */
+    @Enumerated(EnumType.STRING)
     private BillTypeEnum sourceBillType;
 
     public String getItemCode() {

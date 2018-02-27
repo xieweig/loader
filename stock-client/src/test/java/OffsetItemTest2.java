@@ -227,6 +227,19 @@ public class OffsetItemTest2 {
         offsetService.offset(new ResponseResult());
     }
 
+    /**
+     * 日常误差
+     */
+    @Test
+    public void offsetTest14() {
+        String pendCode = "missBillCode001";
+        PendingBill pendingBill = pendingRepository.findByCode(pendCode);
+        OffsetService offsetService = new OffsetService(new StationParser(), offsetDataPersistence);
+        offsetService.setPendingBill(pendingBill);
+
+        offsetService.offset(new ResponseResult());
+    }
+
     @Autowired
     private JPAPendingRepository jpaPendingRepository;
 

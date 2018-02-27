@@ -679,6 +679,88 @@ public class PendingTest2 {
         pendingRepository.save(pendingBill);
     }
 
+    /**
+     * 日常误差
+     */
+    @Test
+    public void missAllTest1() {
+        PendingBill pendingBill = new PendingBill();
+        // 单号
+        pendingBill.setBillCode("missBillCode001");
+        // 原单号
+        //pendingBill.setSourceCode("deliveryBillCode002");
+
+        // 待冲减的项
+        List<PendingBillItem> billItemList = new ArrayList<>();
+        PendingBillItem pendingBillItem = new PendingBillItem();
+        // 项目号
+        pendingBillItem.setItemCode(pendingBill.getBillCode());
+
+        // 调入站点
+        Station inStation = new Station();
+        inStation.setStationCode("HDQA02");
+        inStation.setStorageCode("ST0005");
+        pendingBillItem.setInStation(inStation);
+
+        // 调出站点
+        Station outStation = new Station();
+        outStation.setStationCode("HDQA02");
+        outStation.setStorageCode("mistake");
+        pendingBillItem.setOutStation(outStation);
+
+        // 进出库类型
+        pendingBillItem.setInOutStorage(InOutStorage.MOVE_STORAGE);
+
+
+
+        // 待处理单明细
+        List<PendingBillDetail> billDetailList = new ArrayList<>();
+        // ====================待处理单明细1==========================
+        PendingBillDetail pendingBillDetail = new PendingBillDetail();
+        // 原料
+        RawMaterial rawMaterial = new RawMaterial();
+        rawMaterial.setRawMaterialCode("rawMaterial001");
+        pendingBillDetail.setRawMaterial(rawMaterial);
+        // 货物
+        Cargo cargo = new Cargo();
+        cargo.setCargoCode("cargoCode001");
+        pendingBillDetail.setCargo(cargo);
+
+
+        // 应拣总量
+        pendingBillDetail.setShipTotalAmount(2);
+        // 实拣总量
+        pendingBillDetail.setActualTotalAmount(2);
+
+        billDetailList.add(pendingBillDetail);
+
+        // ====================待处理单明细2==========================
+        PendingBillDetail pendingBillDetail2 = new PendingBillDetail();
+        // 原料
+        RawMaterial rawMaterial2 = new RawMaterial();
+        rawMaterial2.setRawMaterialCode("rawMaterial002");
+        pendingBillDetail2.setRawMaterial(rawMaterial2);
+        // 货物
+        Cargo cargo2 = new Cargo();
+        cargo2.setCargoCode("cargoCode002");
+        pendingBillDetail2.setCargo(cargo2);
+
+        // 应拣总量
+        pendingBillDetail2.setShipTotalAmount(-750);
+        // 实拣总量
+        pendingBillDetail2.setActualTotalAmount(-750);
+
+        billDetailList.add(pendingBillDetail2);
+
+        pendingBillItem.setPendingBillDetailList(billDetailList);
+        billItemList.add(pendingBillItem);
+        // ========================================================
+
+
+        pendingBill.setPendingBillItemList(billItemList);
+        pendingRepository.save(pendingBill);
+    }
+
 
     /**
      * 查询单个
