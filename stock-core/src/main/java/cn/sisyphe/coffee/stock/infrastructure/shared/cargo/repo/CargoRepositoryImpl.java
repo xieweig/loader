@@ -49,7 +49,9 @@ public class CargoRepositoryImpl implements CargoRepository {
             cargo.setMeasurementName(cargoResultMap.get("measurementName").toString());
         }
         // 货物标准单位
-        cargo.setStandardUnit(cargoResultMap.get("standardUnit").toString());
+        if (cargoResultMap.containsValue("standardUnit")) {
+            cargo.setStandardUnit(cargoResultMap.get("standardUnit").toString());
+        }
         cargo.setEffectiveTime(Integer.valueOf(cargoResultMap.get("effectiveTime").toString()));
         return cargo;
     }
