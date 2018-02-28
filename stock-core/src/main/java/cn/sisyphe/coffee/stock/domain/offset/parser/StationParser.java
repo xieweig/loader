@@ -123,7 +123,7 @@ public class StationParser implements BillParser {
      * @param errorMessage
      */
     @Override
-    public void fail(PendingBillItem pendingBillItem, String errorMessage){
+    public void fail(PendingBillItem pendingBillItem, String errorMessage) {
         responseResult.put("message", errorMessage);
         getMessageStrategy(pendingBillItem.getInOutStorage()).send(pendingBillItem, this.responseResult, false);
 
@@ -228,13 +228,13 @@ public class StationParser implements BillParser {
         }
         pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));
 
-        if (((Integer) billDetail.get("shippedAmount")) == 0) {
-            // 误差单不复写此值
-            if (!MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
-                pendingBillDetail.setShipTotalAmount(billDetail.getInteger("actualTotalAmount"));
-            } else {
-                pendingBillDetail.setShipTotalAmount(0);
-            }
+
+        if (MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
+            pendingBillDetail.setShipTotalAmount(billDetail.getInteger("actualTotalAmount"));
+        }
+        // 日常误差单不复写此值
+        if (DAILY_MISTAKE.equals(pendingBillItem.getSourceBillType())) {
+            pendingBillDetail.setShipTotalAmount(billDetail.getInteger("shippedTotalAmount"));
         }
 
 
