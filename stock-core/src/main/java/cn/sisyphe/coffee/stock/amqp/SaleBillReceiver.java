@@ -33,6 +33,7 @@ public class SaleBillReceiver {
 
         SaleParser billParser = new SaleParser();
         billParser.setShareManager(shareManager);
+        billParser.setResponseResult(responseResult);
         offsetManager.offset(responseResult, billParser);
     }
 }

@@ -8,11 +8,13 @@ import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
+import cn.sisyphe.coffee.stock.domain.shared.Constants;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.product.Formula;
 import cn.sisyphe.coffee.stock.domain.shared.goods.product.Product;
 import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
 import cn.sisyphe.coffee.stock.domain.shared.station.Station;
+import cn.sisyphe.framework.message.core.MessagingHelper;
 import cn.sisyphe.framework.web.ResponseResult;
 import cn.sisyphe.framework.web.exception.DataException;
 import com.alibaba.fastjson.JSONObject;
@@ -20,6 +22,8 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static cn.sisyphe.coffee.stock.domain.shared.Constants.SALE_EXCHANGE;
 
 /**
  * Created by heyong on 2018/1/8 12:26
@@ -45,6 +49,9 @@ public class SaleParser implements BillParser {
     private OffsetService offsetService;
 
     private ShareManager shareManager;
+
+
+    private ResponseResult responseResult;
 
     /**
      * 冲减操作上下文
@@ -188,16 +195,19 @@ public class SaleParser implements BillParser {
      */
     @Override
     public void success(PendingBillItem pendingBillItem) {
+        MessagingHelper.messaging().convertAndSend(SALE_EXCHANGE, Constants.COFFEE_SALE_SUCCESS_KEY, this.responseResult);
 
     }
 
     /**
      * 失败
+     *
      * @param pendingBillItem
      * @param errorMessage
      */
     @Override
-    public void fail(PendingBillItem pendingBillItem, String errorMessage){
+    public void fail(PendingBillItem pendingBillItem, String errorMessage) {
+        MessagingHelper.messaging().convertAndSend(SALE_EXCHANGE, Constants.COFFEE_SALE_FAIL_KEY, this.responseResult);
 
     }
 
@@ -207,5 +217,13 @@ public class SaleParser implements BillParser {
 
     public void setShareManager(ShareManager shareManager) {
         this.shareManager = shareManager;
+    }
+
+    public ResponseResult getResponseResult() {
+        return responseResult;
+    }
+
+    public void setResponseResult(ResponseResult responseResult) {
+        this.responseResult = responseResult;
     }
 }
