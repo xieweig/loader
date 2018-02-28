@@ -1,8 +1,11 @@
 package cn.sisyphe.stockexcel.controller;
 
+import cn.sisyphe.coffee.stock.infrastructure.shared.LoginInfo;
 import cn.sisyphe.coffee.stock.viewmodel.ConditionQueryStorage;
 import cn.sisyphe.common.ResponseResult;
+import cn.sisyphe.framework.auth.logic.annotation.ScopeAuth;
 import cn.sisyphe.stockexcel.application.ExportExcelManager;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/stock/excel/export")
+@Api(description = "库存查询导出Excel接口")
 @CrossOrigin(origins = "*")
 public class ExcelController {
     @Autowired
@@ -33,13 +37,13 @@ public class ExcelController {
      * @param request
      * @return
      */
-//    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"},token = "userCode")
+    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"}, token = "userCode")
     @RequestMapping(path = "/exportOffsetCargo", method = RequestMethod.POST)
     public ResponseResult exportOffsetCargo(@RequestBody ConditionQueryStorage conditionQueryStorage, HttpServletRequest request) {
         ResponseResult responseResult = new ResponseResult();
         try {
-//            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
-            responseResult.put("asyncTaskResult", exportExcelManager.exportOffsetCargo(conditionQueryStorage, "OperatorCode", "StationCode"));
+            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
+            responseResult.put("asyncTaskResult", exportExcelManager.exportOffsetCargo(conditionQueryStorage, loginInfo.getOperatorCode(), loginInfo.getStationCode()));
         } catch (Exception e) {
             responseResult.putException(e);
         }
@@ -53,13 +57,13 @@ public class ExcelController {
      * @param request
      * @return
      */
-//    @ScopeAuth(scopes = {"#conditionQueryStationMinimum.stationCodeArray"},token = "userCode")
+    @ScopeAuth(scopes = {"#conditionQueryStationMinimum.stationCodeArray"}, token = "userCode")
     @RequestMapping(path = "/exportOffsetMaterial", method = RequestMethod.POST)
     public ResponseResult exportOffsetMaterial(@RequestBody ConditionQueryStorage conditionQueryStorage, HttpServletRequest request) {
         ResponseResult responseResult = new ResponseResult();
         try {
-//            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
-            responseResult.put("asyncTaskResult", exportExcelManager.exportOffsetMaterial(conditionQueryStorage, "OperatorCode", "StationCode"));
+            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
+            responseResult.put("asyncTaskResult", exportExcelManager.exportOffsetMaterial(conditionQueryStorage, loginInfo.getOperatorCode(), loginInfo.getStationCode()));
         } catch (Exception e) {
             responseResult.putException(e);
         }
@@ -74,13 +78,13 @@ public class ExcelController {
      * @param request
      * @return
      */
-//    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"},token = "userCode")
+    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"}, token = "userCode")
     @RequestMapping(path = "/exportStorageInventoryCargo", method = RequestMethod.POST)
     public ResponseResult exportStorageInventoryCargo(@RequestBody ConditionQueryStorage conditionQueryStorage, HttpServletRequest request) {
         ResponseResult responseResult = new ResponseResult();
         try {
-//            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
-            responseResult.put("asyncTaskResult", exportExcelManager.exportStorageInventoryCargo(conditionQueryStorage, "OperatorCode", "StationCode"));
+            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
+            responseResult.put("asyncTaskResult", exportExcelManager.exportStorageInventoryCargo(conditionQueryStorage, loginInfo.getOperatorCode(), loginInfo.getStationCode()));
         } catch (Exception e) {
             responseResult.putException(e);
         }
@@ -94,13 +98,13 @@ public class ExcelController {
      * @param request
      * @return
      */
-//    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"},token = "userCode")
+    @ScopeAuth(scopes = {"#conditionQueryStorage.stationCodeArray"}, token = "userCode")
     @RequestMapping(path = "/exportStorageInventoryMaterial", method = RequestMethod.POST)
     public ResponseResult exportStorageInventoryMaterial(@RequestBody ConditionQueryStorage conditionQueryStorage, HttpServletRequest request) {
         ResponseResult responseResult = new ResponseResult();
         try {
-//            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
-            responseResult.put("asyncTaskResult", exportExcelManager.exportStorageInventoryMaterial(conditionQueryStorage, "OperatorCode", "StationCode"));
+            LoginInfo loginInfo = LoginInfo.getLoginInfo(request);
+            responseResult.put("asyncTaskResult", exportExcelManager.exportStorageInventoryMaterial(conditionQueryStorage, loginInfo.getOperatorCode(), loginInfo.getStationCode()));
         } catch (Exception e) {
             responseResult.putException(e);
         }
