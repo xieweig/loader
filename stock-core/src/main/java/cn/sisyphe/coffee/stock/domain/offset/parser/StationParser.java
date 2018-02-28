@@ -226,8 +226,14 @@ public class StationParser implements BillParser {
             return;
         }
         pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));
+
         if (((Integer) billDetail.get("shippedAmount")) == 0) {
-            pendingBillDetail.setShipTotalAmount(billDetail.getInteger("actualTotalAmount"));
+            // 误差单不复写此值
+            if (!MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
+                pendingBillDetail.setShipTotalAmount(billDetail.getInteger("actualTotalAmount"));
+            } else {
+                pendingBillDetail.setShipTotalAmount(0);
+            }
         }
 
 
