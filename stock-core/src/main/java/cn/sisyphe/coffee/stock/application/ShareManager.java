@@ -2,6 +2,8 @@ package cn.sisyphe.coffee.stock.application;
 
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.CargoService;
+import cn.sisyphe.coffee.stock.domain.shared.goods.product.Product;
+import cn.sisyphe.coffee.stock.domain.shared.goods.product.ProductService;
 import cn.sisyphe.coffee.stock.domain.shared.station.StationService;
 import cn.sisyphe.coffee.stock.domain.shared.supplier.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class ShareManager {
     @Autowired
     private SupplierService supplierService;
 
+    @Autowired
+    private ProductService productService;
+
 
     public Cargo findByCargoCode(String cargoCode) {
         return cargoService.findByCargoCode(cargoCode);
@@ -35,5 +40,9 @@ public class ShareManager {
 
     public String findSupplierNameBySupplierCode(String stationCode) {
         return supplierService.findSupplierNameBySupplierCode(stationCode);
+    }
+
+    public Product findByProductCode(String productCode) {
+        return productService.findByProductCode(productCode);
     }
 }

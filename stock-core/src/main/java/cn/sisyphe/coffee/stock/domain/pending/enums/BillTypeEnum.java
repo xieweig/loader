@@ -63,7 +63,9 @@ public enum BillTypeEnum {
     /**
      * 其它出入库单
      */
-    IN_OUT_SELF;
+    IN_OUT_SELF,
+
+    SALE;
 
 
     /**

@@ -21,6 +21,6 @@ public interface ProductCloudRepository {
      * @param productCode 产品编码
      * @return
      */
-    @RequestMapping(path = "/api/v1/baseInfo/product/findByProductCode", method = RequestMethod.GET)
-    ResponseResult findByProductCode(@RequestParam("productCode") String productCode);
+    @RequestMapping(path = "/api/v1/baseInfo/products/findByProductCode", method = RequestMethod.GET)
+    ResponseResult findByProductCode(@RequestParam(value = "productCode") String productCode);
 }

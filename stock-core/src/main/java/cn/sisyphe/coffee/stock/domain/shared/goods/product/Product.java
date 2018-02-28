@@ -1,5 +1,7 @@
 package cn.sisyphe.coffee.stock.domain.shared.goods.product;
 
+import java.util.List;
+
 /**
  * Created by heyong on 2018/1/5 11:23
  * Description: 产品
@@ -18,6 +20,10 @@ public class Product{
      */
     private String productName;
 
+    private String productType;
+
+    private List<Formula> formulas;
+
     public String getProductCode() {
         return productCode;
     }
@@ -32,6 +38,22 @@ public class Product{
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public List<Formula> getFormulas() {
+        return formulas;
+    }
+
+    public void setFormulas(List<Formula> formulas) {
+        this.formulas = formulas;
     }
 
     @Override

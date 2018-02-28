@@ -3,10 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
     <rabbit:queue name="bill-to-stock"/>
+    <rabbit:queue name="sale-to-stock"/>
 
     <rabbit:topic-exchange name="cn_sisyphe_coffee_bill">
         <rabbit:bindings>
             <rabbit:binding queue="bill-to-stock" pattern="bill.*.*.*"/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+    <rabbit:topic-exchange name="cn_sisyphe_coffee_sale">
+        <rabbit:bindings>
+            <rabbit:binding queue="sale-to-stock" pattern="coffee.sale.*.*.*"/>
         </rabbit:bindings>
     </rabbit:topic-exchange>
 

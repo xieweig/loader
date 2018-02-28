@@ -1,16 +1,23 @@
 package cn.sisyphe.coffee.stock.domain.offset.parser;
 
+import cn.sisyphe.coffee.stock.application.ShareManager;
 import cn.sisyphe.coffee.stock.domain.offset.OffsetService;
 import cn.sisyphe.coffee.stock.domain.offset.strategy.CargoFirstOffsetStrategy;
 import cn.sisyphe.coffee.stock.domain.offset.strategy.OffsetStrategy;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
+import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
+import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
+import cn.sisyphe.coffee.stock.domain.shared.goods.product.Formula;
+import cn.sisyphe.coffee.stock.domain.shared.goods.product.Product;
+import cn.sisyphe.coffee.stock.domain.shared.goods.rawmaterial.RawMaterial;
+import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.framework.web.ResponseResult;
 import cn.sisyphe.framework.web.exception.DataException;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +30,21 @@ import java.util.Map;
 public class SaleParser implements BillParser {
 
     /**
+     * 自研产品
+     */
+    public static final String SELF_PRODUCT = "SELF_PRODUCT";
+
+    /**
+     * 成品
+     */
+    public static final String PRODUCT = "PRODUCT";
+    public static final String MEAL = "MEAL";
+    /**
      * 冲减服务
      */
     private OffsetService offsetService;
+
+    private ShareManager shareManager;
 
     /**
      * 冲减操作上下文
@@ -68,41 +87,98 @@ public class SaleParser implements BillParser {
     @Override
     public PendingBill parseBill(ResponseResult responseResult) {
         Map<String, Object> resultMap = responseResult.getResult();
-        if (!resultMap.containsKey("bill")) {
+        if (!resultMap.containsKey("order")) {
             // TODO: 2018/1/23 MQ中单据解析
-            throw new DataException("200006", "没有包含单据信息");
+            throw new DataException("200006", "没有包含订单信息");
         }
-        // 解析MQ中的数据源
-        LinkedHashMap resultLinked = (LinkedHashMap) resultMap;
-        // 单据编码
-        String billCode = resultLinked.get("billCode").toString();
-
+        Map<String, Object> order = (Map) resultMap.get("order");
         PendingBill pendingBill = new PendingBill();
-        // 设置单据编码
-        pendingBill.setBillCode(billCode);
-
-        // 设置待冲减的项
-        List<PendingBillItem> billItemList = new ArrayList<PendingBillItem>();
-        // 构造待冲减项
-        PendingBillItem pendingBillItem = new PendingBillItem();
-
-        // 设置待冲减的物品
-        List<PendingBillDetail> pendingBillDetails = new ArrayList<PendingBillDetail>();
-        // 构造待冲减的物品
-        PendingBillDetail pendingBillDetail = new PendingBillDetail();
-        LinkedHashMap billDetailsLinked = (LinkedHashMap) resultLinked.get("billDetails");
-        billDetailsLinked.get("actualAmount");
-
-        pendingBillDetails.add(pendingBillDetail);
-
-        pendingBillItem.setPendingBillDetailList(pendingBillDetails);
-
-
-        billItemList.add(pendingBillItem);
-
-        pendingBill.setPendingBillItemList(billItemList);
+        pendingBill.setBillCode((String) order.get("saleOrderCode"));
+        List<PendingBillItem> pendingBillItems = convertToBillItems(order);
+        pendingBill.addPendingBillItems(pendingBillItems);
 
         return pendingBill;
+    }
+
+    private List<PendingBillItem> convertToBillItems(Map<String, Object> order) {
+        List<PendingBillItem> pendingBillItems = new ArrayList<>();
+        List<JSONObject> orderDetails = (List) order.get("saleOrderDetailSet");
+        for (JSONObject orderDetail : orderDetails) {
+            PendingBillItem pendingBillItem = new PendingBillItem();
+            pendingBillItem.setItemCode((String) order.get("billCode"));
+            pendingBillItem.setInOutStorage(InOutStorage.OUT_STORAGE);
+            pendingBillItem.setOutStation(mapStation((String) order.get("stationCode")));
+            List<PendingBillDetail> pendingBillDetails = mapPendBillDetails(orderDetail);
+            pendingBillItem.addPendingBillDetails(pendingBillDetails);
+            pendingBillItems.add(pendingBillItem);
+
+        }
+
+        return pendingBillItems;
+    }
+
+    private Station mapStation(String stationCode) {
+        if (stationCode == null) {
+            return null;
+        }
+        Station station = new Station();
+        station.setStationCode(stationCode);
+        station.setStorageCode("NORMAL");
+        station.setStationName(getShareManager().findStationNameByStationCode(stationCode));
+        return station;
+    }
+
+    private List<PendingBillDetail> mapPendBillDetails(JSONObject orderDetail) {
+        List<PendingBillDetail> pendingBillDetails = new ArrayList<>();
+        Product product = shareManager.findByProductCode((String) orderDetail.get("productCode"));
+        if (SELF_PRODUCT.equals(product.getProductType())) {
+            pendingBillDetails.addAll(mapPendingBillDetails(orderDetail, product, 1));
+        }
+        if (PRODUCT.equals(product.getProductType())) {
+            pendingBillDetails.add(mapProductPendingDetail(orderDetail, product, 1));
+        }
+        if (MEAL.equals(product.getProductType())) {
+            for (Formula formula : product.getFormulas()) {
+                Product formulaProduct = shareManager.findByProductCode(formula.getRawMaterialCode());
+                if (SELF_PRODUCT.equals(formulaProduct.getProductType())) {
+                    pendingBillDetails.addAll(mapPendingBillDetails(orderDetail, formulaProduct, formula.getAmount()));
+                }
+                if (PRODUCT.equals(formulaProduct.getProductType())) {
+                    pendingBillDetails.add(mapProductPendingDetail(orderDetail, formulaProduct, formula.getAmount()));
+                }
+            }
+        }
+        return pendingBillDetails;
+    }
+
+    private PendingBillDetail mapProductPendingDetail(JSONObject orderDetail, Product product, Integer factor) {
+        PendingBillDetail pendingBillDetail = new PendingBillDetail();
+        pendingBillDetail.setActualAmount(orderDetail.getInteger("saleAmount") * factor);
+        pendingBillDetail.setActualTotalAmount(orderDetail.getInteger("saleAmount") * factor);
+        pendingBillDetail.setCargo(new Cargo(product.getProductCode()));
+        pendingBillDetail.setRawMaterial(new RawMaterial(product.getProductCode()));
+        return pendingBillDetail;
+    }
+
+    private List<PendingBillDetail> mapPendingBillDetails(JSONObject orderDetail, Product product, Integer factor) {
+        List<PendingBillDetail> pendingBillDetails = new ArrayList<>();
+
+        for (Formula formula : product.getFormulas()) {
+            PendingBillDetail pendingBillDetail = new PendingBillDetail();
+            if ("MATERIAL".equals(formula.getFormulaType())) {
+                pendingBillDetail.setActualTotalAmount(mapTotalAmount(formula, orderDetail) * factor);
+                pendingBillDetail.setActualAmount(orderDetail.getInteger("saleAmount") * factor);
+                pendingBillDetail.setRawMaterial(new RawMaterial(formula.getRawMaterialCode()));
+                pendingBillDetails.add(pendingBillDetail);
+            }
+        }
+        return pendingBillDetails;
+    }
+
+
+    private Integer mapTotalAmount(Formula formula, JSONObject orderDetail) {
+        Integer productAmount = orderDetail.getInteger("saleAmount");
+        return formula.getAmount() * productAmount;
     }
 
     /**
@@ -123,5 +199,13 @@ public class SaleParser implements BillParser {
     @Override
     public void fail(PendingBillItem pendingBillItem) {
 
+    }
+
+    public ShareManager getShareManager() {
+        return shareManager;
+    }
+
+    public void setShareManager(ShareManager shareManager) {
+        this.shareManager = shareManager;
     }
 }
