@@ -1,12 +1,15 @@
 package cn.sisyphe.coffee.stock.infrastructure.shared.product.repo;
 
+import cn.sisyphe.coffee.stock.domain.shared.goods.product.Formula;
 import cn.sisyphe.coffee.stock.domain.shared.goods.product.Product;
 import cn.sisyphe.coffee.stock.infrastructure.shared.product.ProductCloudRepository;
 import cn.sisyphe.framework.web.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,10 +38,26 @@ public class ProductRepositoryImpl implements ProductRepository {
         if (!resultMap.containsKey("product")) {
             return new Product();
         }
-        LinkedHashMap<String, String> productResultMap = (LinkedHashMap) resultMap.get("cargo");
+        LinkedHashMap<String, Object> productResultMap = (LinkedHashMap) resultMap.get("product");
         Product product = new Product();
-        product.setProductCode(productResultMap.get("productCode"));
-        product.setProductName(productResultMap.get("productName"));
+        product.setProductCode((String) productResultMap.get("productCode"));
+        product.setProductName((String) productResultMap.get("productName"));
+        product.setProductType((String) productResultMap.get("baseType"));
+        product.setFormulas(mapFormulas(productResultMap));
         return product;
+    }
+
+    private List<Formula> mapFormulas(LinkedHashMap<String, Object> productResultMap) {
+        List<Formula> formulas = new ArrayList<>();
+        List<Map> formulasMap = (List) productResultMap.get("formulas");
+        for (Map formulaProperty : formulasMap) {
+            Formula formula = new Formula();
+            formula.setAmount((Integer) (formulaProperty.get("amount")));
+            formula.setRawMaterialCode((String) formulaProperty.get("code"));
+            formula.setFormulaType((String) formulaProperty.get("formulaType"));
+            formulas.add(formula);
+        }
+        return formulas;
+
     }
 }

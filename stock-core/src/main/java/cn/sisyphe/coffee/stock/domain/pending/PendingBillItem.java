@@ -20,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,7 +80,7 @@ public class PendingBillItem extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @org.hibernate.annotations.ForeignKey(name = "none")
     @JoinColumn(name = "itemCode", referencedColumnName = "itemCode")
-    private List<PendingBillDetail> pendingBillDetailList;
+    private List<PendingBillDetail> pendingBillDetailList = new ArrayList<>();
 
     /**
      * 来源单据的类型
@@ -135,6 +136,10 @@ public class PendingBillItem extends BaseEntity {
 
     public void setPendingBillDetailList(List<PendingBillDetail> pendingBillDetailList) {
         this.pendingBillDetailList = pendingBillDetailList;
+    }
+
+    public void addPendingBillDetails(List<PendingBillDetail> pendingBillDetails) {
+        this.pendingBillDetailList.addAll(pendingBillDetails);
     }
 
     public BillTypeEnum getSourceBillType() {

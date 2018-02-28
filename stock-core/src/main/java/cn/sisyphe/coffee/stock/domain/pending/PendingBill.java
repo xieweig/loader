@@ -90,6 +90,10 @@ public class PendingBill extends BaseEntity{
         this.pendingBillItemList.add(pendingBillItem);
     }
 
+    public void addPendingBillItems(List<PendingBillItem> pendingBillItems) {
+        this.pendingBillItemList.addAll(pendingBillItems);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
