@@ -19,6 +19,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
+import java.text.MessageFormat;
+
 /**
  * Created by heyong on 2018/1/5 9:53
  * Description: 冲减服务
@@ -304,7 +306,15 @@ public class OffsetService {
 
                 pendingBill.setOffset(false);
                 pendingBillItem.setOffset(false);
-                billParser.fail(pendingBillItem);
+
+                String errorMessage;
+                if (e instanceof DataException){
+                    errorMessage = MessageFormat.format("[{0}]{1}", ((DataException)e).getErrorCode(), ((DataException)e).getErrorMessage());
+                }else {
+                    errorMessage = e.getMessage();
+                }
+
+                billParser.fail(pendingBillItem, errorMessage);
 
                 e.printStackTrace();
 

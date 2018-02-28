@@ -119,11 +119,12 @@ public class StationParser implements BillParser {
 
     /**
      * 失败
-     *
      * @param pendingBillItem
+     * @param errorMessage
      */
     @Override
-    public void fail(PendingBillItem pendingBillItem) {
+    public void fail(PendingBillItem pendingBillItem, String errorMessage){
+        responseResult.put("message", errorMessage);
         getMessageStrategy(pendingBillItem.getInOutStorage()).send(pendingBillItem, this.responseResult, false);
 
     }

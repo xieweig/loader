@@ -54,7 +54,8 @@ public interface BillParser {
     /**
      * 失败
      * @param pendingBillItem
+     * @param errorMessage
      */
-    void fail(PendingBillItem pendingBillItem);
+    void fail(PendingBillItem pendingBillItem, String errorMessage);
 
 }
