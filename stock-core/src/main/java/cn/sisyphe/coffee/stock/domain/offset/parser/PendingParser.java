@@ -72,11 +72,13 @@ public class PendingParser implements BillParser {
      * 失败
      *
      * @param pendingBillItem
+     * @param errorMessage
      */
     @Override
-    public void fail(PendingBillItem pendingBillItem) {
+    public void fail(PendingBillItem pendingBillItem, String errorMessage) {
 
     }
+
 
 
 }
