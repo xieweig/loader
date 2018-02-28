@@ -105,7 +105,7 @@ public class SaleParser implements BillParser {
         List<JSONObject> orderDetails = (List) order.get("saleOrderDetailSet");
         for (JSONObject orderDetail : orderDetails) {
             PendingBillItem pendingBillItem = new PendingBillItem();
-            pendingBillItem.setItemCode((String) order.get("billCode"));
+            pendingBillItem.setItemCode((String) order.get("saleOrderCode"));
             pendingBillItem.setInOutStorage(InOutStorage.OUT_STORAGE);
             pendingBillItem.setOutStation(mapStation((String) order.get("stationCode")));
             List<PendingBillDetail> pendingBillDetails = mapPendBillDetails(orderDetail);
