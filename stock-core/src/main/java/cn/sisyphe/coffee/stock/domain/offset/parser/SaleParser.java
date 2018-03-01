@@ -7,6 +7,7 @@ import cn.sisyphe.coffee.stock.domain.offset.strategy.OffsetStrategy;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBill;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillDetail;
 import cn.sisyphe.coffee.stock.domain.pending.PendingBillItem;
+import cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum;
 import cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage;
 import cn.sisyphe.coffee.stock.domain.shared.Constants;
 import cn.sisyphe.coffee.stock.domain.shared.goods.cargo.Cargo;
@@ -119,6 +120,7 @@ public class SaleParser implements BillParser {
             pendingBillItem.setItemCode((String) order.get("saleOrderCode"));
             pendingBillItem.setInOutStorage(InOutStorage.OUT_STORAGE);
             pendingBillItem.setOutStation(mapStation((String) order.get("stationCode")));
+            pendingBillItem.setSourceBillType(BillTypeEnum.SALE);
             List<PendingBillDetail> pendingBillDetails = mapPendBillDetails(orderDetail);
             pendingBillItem.addPendingBillDetails(pendingBillDetails);
             pendingBillItems.add(pendingBillItem);
