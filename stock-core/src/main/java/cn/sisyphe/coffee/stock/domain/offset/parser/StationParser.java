@@ -32,6 +32,7 @@ import static cn.sisyphe.coffee.stock.domain.pending.enums.BillTypeEnum.valueOf;
 import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.IN_STORAGE;
 import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.MOVE_STORAGE;
 import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.OUT_STORAGE;
+import static java.lang.Math.round;
 import static java.util.Arrays.asList;
 
 /**
@@ -141,8 +142,8 @@ public class StationParser implements BillParser {
         List<PendingBillDetail> pendingBillDetails = new ArrayList<>();
         for (JSONObject billDetail : billDetails) {
             PendingBillDetail pendingBillDetail = new PendingBillDetail();
-            pendingBillDetail.setActualAmount(billDetail.getInteger("actualAmount"));
-            pendingBillDetail.setShipAmount(billDetail.getInteger("shippedAmount"));
+            pendingBillDetail.setActualAmount(billDetail.getFloat("actualAmount"));
+            pendingBillDetail.setShipAmount(billDetail.getFloat("shippedAmount"));
             pendingBillDetail.setUnitCost(billDetail.getBigDecimal("unitPrice"));
             pendingBillDetail.setExpirationTime(billDetail.getDate("dateInProduced"));
             mapMaterialAndCargo(pendingBillDetail, (JSONObject) billDetail.get("goods"));
@@ -219,17 +220,17 @@ public class StationParser implements BillParser {
             Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
             if (cargo != null && cargo.getMeasurement() != null) {
                 Integer measurement = cargo.getMeasurement();
-                pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount() * measurement);
-                pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
+                pendingBillDetail.setActualTotalAmount(round(pendingBillDetail.getActualAmount() * measurement));
+                pendingBillDetail.setShipTotalAmount(round(pendingBillDetail.getShipAmount() * measurement));
                 return;
             }
-            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
-            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
+            pendingBillDetail.setActualTotalAmount(round(pendingBillDetail.getActualAmount()));
+            pendingBillDetail.setShipTotalAmount(round(pendingBillDetail.getShipAmount()));
             return;
         }
         if (pendingBillDetail.getCargo() == null && pendingBillDetail.getRawMaterial() != null && !MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
-            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
-            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
+            pendingBillDetail.setActualTotalAmount(round(pendingBillDetail.getActualAmount()));
+            pendingBillDetail.setShipTotalAmount(round(pendingBillDetail.getShipAmount()));
             return;
         }
         pendingBillDetail.setActualTotalAmount(billDetail.getInteger("actualTotalAmount"));

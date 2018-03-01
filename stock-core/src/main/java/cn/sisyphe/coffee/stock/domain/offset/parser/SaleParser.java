@@ -184,7 +184,7 @@ public class SaleParser implements BillParser {
 
     private PendingBillDetail mapProductPendingDetail(JSONObject orderDetail, Product product, Integer factor) {
         PendingBillDetail pendingBillDetail = new PendingBillDetail();
-        pendingBillDetail.setActualAmount(orderDetail.getInteger("saleAmount") * factor);
+        pendingBillDetail.setActualAmount((float) (orderDetail.getInteger("saleAmount") * factor));
         pendingBillDetail.setActualTotalAmount(orderDetail.getInteger("saleAmount") * factor);
         pendingBillDetail.setCargo(new Cargo(product.getProductCode()));
         pendingBillDetail.setRawMaterial(new RawMaterial(product.getProductCode()));
@@ -198,7 +198,7 @@ public class SaleParser implements BillParser {
             PendingBillDetail pendingBillDetail = new PendingBillDetail();
             if ("MATERIAL".equals(formula.getFormulaType())) {
                 pendingBillDetail.setActualTotalAmount(mapTotalAmount(formula, orderDetail) * factor);
-                pendingBillDetail.setActualAmount(orderDetail.getInteger("saleAmount") * factor);
+                pendingBillDetail.setActualAmount((float) orderDetail.getInteger("saleAmount") * factor);
                 pendingBillDetail.setRawMaterial(new RawMaterial(formula.getRawMaterialCode()));
                 pendingBillDetails.add(pendingBillDetail);
             }

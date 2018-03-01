@@ -70,9 +70,9 @@ public class PendingTest {
         // 成本金额
         pendingBillDetail.setUnitCost(new BigDecimal(0.88));
         // 实拣数量
-        pendingBillDetail.setActualAmount(100);
+        pendingBillDetail.setActualAmount(100f);
         // 应拣数量
-        pendingBillDetail.setShipAmount(100);
+        pendingBillDetail.setShipAmount(100f);
         // 应拣总量
         pendingBillDetail.setShipTotalAmount(1000);
         // 实拣总量
@@ -95,9 +95,9 @@ public class PendingTest {
         // 成本金额
         pendingBillDetail2.setUnitCost(new BigDecimal(0.78));
         // 实拣数量
-        pendingBillDetail2.setActualAmount(100);
+        pendingBillDetail2.setActualAmount(100f);
         // 应拣数量
-        pendingBillDetail2.setShipAmount(100);
+        pendingBillDetail2.setShipAmount(100f);
         // 应拣总量
         pendingBillDetail2.setShipTotalAmount(1000);
         // 实拣总量

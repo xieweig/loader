@@ -52,13 +52,13 @@ public class PendingBillDetail extends BaseEntity{
      * 实拣数量
      */
     @Transient
-    private Integer actualAmount;
+    private Float actualAmount;
 
     /**
      * 应拣数量
      */
     @Transient
-    private Integer shipAmount;
+    private Float shipAmount;
 
     /**
      * 应拣总量
@@ -113,19 +113,19 @@ public class PendingBillDetail extends BaseEntity{
         this.unitCost = unitCost;
     }
 
-    public Integer getActualAmount() {
+    public Float getActualAmount() {
         return actualAmount;
     }
 
-    public void setActualAmount(Integer actualAmount) {
+    public void setActualAmount(Float actualAmount) {
         this.actualAmount = actualAmount;
     }
 
-    public Integer getShipAmount() {
+    public Float getShipAmount() {
         return shipAmount;
     }
 
-    public void setShipAmount(Integer shipAmount) {
+    public void setShipAmount(Float shipAmount) {
         this.shipAmount = shipAmount;
     }
 
