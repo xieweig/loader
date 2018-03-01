@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.IN_STORAGE;
+import static cn.sisyphe.coffee.stock.domain.pending.enums.InOutStorage.OUT_STORAGE;
 import static cn.sisyphe.coffee.stock.domain.shared.Constants.SALE_EXCHANGE;
 
 /**
@@ -48,6 +50,7 @@ public class SaleParser implements BillParser {
      * 套餐
      */
     private static final String MEAL = "MEAL";
+    public static final String SALE_ORDER = "Order";
     /**
      * 冲减服务
      */
@@ -116,10 +119,13 @@ public class SaleParser implements BillParser {
         List<PendingBillItem> pendingBillItems = new ArrayList<>();
         List<JSONObject> orderDetails = (List) order.get("saleOrderDetailSet");
         for (JSONObject orderDetail : orderDetails) {
+            if (!(Boolean) orderDetail.get("requireStock")) {
+                continue;
+            }
             PendingBillItem pendingBillItem = new PendingBillItem();
             pendingBillItem.setItemCode((String) order.get("saleOrderCode"));
-            pendingBillItem.setInOutStorage(InOutStorage.OUT_STORAGE);
-            pendingBillItem.setOutStation(mapStation((String) order.get("stationCode")));
+            pendingBillItem.setInOutStorage(mapSaleOrderType((String) order.get("saleOrderType")));
+            mapStation((String) order.get("stationCode"), pendingBillItem);
             pendingBillItem.setSourceBillType(BillTypeEnum.SALE);
             List<PendingBillDetail> pendingBillDetails = mapPendBillDetails(orderDetail);
             pendingBillItem.addPendingBillDetails(pendingBillDetails);
@@ -130,15 +136,27 @@ public class SaleParser implements BillParser {
         return pendingBillItems;
     }
 
-    private Station mapStation(String stationCode) {
+    private InOutStorage mapSaleOrderType(String orderType) {
+        if (orderType != null && SALE_ORDER.equals(orderType)) {
+            return OUT_STORAGE;
+        }
+        return InOutStorage.IN_STORAGE;
+    }
+
+
+    private void mapStation(String stationCode, PendingBillItem pendingBillItem) {
         if (stationCode == null) {
-            return null;
+            return;
         }
         Station station = new Station();
         station.setStationCode(stationCode);
         station.setStorageCode("NORMAL");
         station.setStationName(getShareManager().findStationNameByStationCode(stationCode));
-        return station;
+        if (IN_STORAGE.equals(pendingBillItem.getInOutStorage())) {
+            pendingBillItem.setInStation(station);
+            return;
+        }
+        pendingBillItem.setOutStation(station);
     }
 
     private List<PendingBillDetail> mapPendBillDetails(JSONObject orderDetail) {
