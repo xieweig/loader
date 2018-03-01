@@ -36,13 +36,17 @@ public class SaleParser implements BillParser {
     /**
      * 自研产品
      */
-    public static final String SELF_PRODUCT = "SELF_PRODUCT";
+    private static final String SELF_PRODUCT = "SELF_PRODUCT";
 
     /**
      * 成品
      */
-    public static final String PRODUCT = "PRODUCT";
-    public static final String MEAL = "MEAL";
+    private static final String PRODUCT = "PRODUCT";
+
+    /**
+     * 套餐
+     */
+    private static final String MEAL = "MEAL";
     /**
      * 冲减服务
      */

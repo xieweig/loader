@@ -119,6 +119,7 @@ public class StationParser implements BillParser {
 
     /**
      * 失败
+     *
      * @param pendingBillItem
      * @param errorMessage
      */
@@ -222,6 +223,11 @@ public class StationParser implements BillParser {
                 pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount() * measurement);
                 return;
             }
+            pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
+            pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
+            return;
+        }
+        if (pendingBillDetail.getCargo() == null && pendingBillDetail.getRawMaterial() != null && !MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
             pendingBillDetail.setActualTotalAmount(pendingBillDetail.getActualAmount());
             pendingBillDetail.setShipTotalAmount(pendingBillDetail.getShipAmount());
             return;
