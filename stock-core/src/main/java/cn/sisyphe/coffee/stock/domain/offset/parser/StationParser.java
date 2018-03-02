@@ -20,6 +20,8 @@ import cn.sisyphe.coffee.stock.domain.shared.station.Station;
 import cn.sisyphe.coffee.stock.domain.storage.model.Storage;
 import cn.sisyphe.framework.web.ResponseResult;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,8 @@ public class StationParser implements BillParser {
     private static final List<String> BILL_PURPOSE = asList("IN_STORAGE", "OUT_STORAGE", "MOVE_STORAGE");
 
     private static final List<BillTypeEnum> MISTAKE_BILL_TYPE = asList(OVERFLOW_MISTAKE, LOST_MISTAKE, DAILY_MISTAKE);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StationParser.class);
 
     /**
      * 冲减服务
@@ -151,6 +155,7 @@ public class StationParser implements BillParser {
             pendingBillDetails.add(pendingBillDetail);
         }
         pendingBillItem.setPendingBillDetailList(pendingBillDetails);
+        LOGGER.info((pendingBillItem.toString()));
         return pendingBillItem;
     }
 
@@ -218,6 +223,7 @@ public class StationParser implements BillParser {
     private void mapTotalAmount(JSONObject billDetail, PendingBillDetail pendingBillDetail, PendingBillItem pendingBillItem) {
         if (pendingBillDetail.getCargo() != null && !MISTAKE_BILL_TYPE.contains(pendingBillItem.getSourceBillType())) {
             Cargo cargo = shareManager.findByCargoCode(pendingBillDetail.getCargo().getCargoCode());
+            LOGGER.info(cargo.toString());
             if (cargo != null && cargo.getMeasurement() != null) {
                 Integer measurement = cargo.getMeasurement();
                 pendingBillDetail.setActualTotalAmount(round(pendingBillDetail.getActualAmount() * measurement));

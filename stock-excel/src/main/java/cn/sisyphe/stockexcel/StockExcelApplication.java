@@ -2,7 +2,6 @@ package cn.sisyphe.stockexcel;
 
 import cn.sisyphe.common.excel.ExcelManager;
 import cn.sisyphe.framework.cache.core.annotation.EnableS2Cache;
-import cn.sisyphe.framework.message.core.annotation.EnableS2Messaging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,7 +24,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableS2Cache
 //@Import(GlobalExceptionHandler.class)
 //@EnableScopeAuth
-@EnableS2Messaging
 @EnableSwagger2
 @EnableEurekaClient
 @EnableFeignClients
@@ -39,7 +37,7 @@ public class StockExcelApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... strings) {
         ExcelManager.instance().setFilePath(downLoadPath);
     }
 }

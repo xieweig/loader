@@ -27,6 +27,12 @@
             <groupId>cn.sisyphe.coffee.stock</groupId>
             <artifactId>stock-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>cn.sisyphe.framework</groupId>
+                    <artifactId>framework-message-rabbit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
